@@ -1,0 +1,14 @@
+.root{
+    -fx-background-color: red;
+}
+.label{
+    -fx-background-color: blue;
+}
+
+.MenuBar{
+    -fx-background-color: green;
+}
+
+.menu-item{
+    -fx-background-color: green;
+}

@@ -1,0 +1,45 @@
+/*
+.pagination{
+    -fx-border-color: red;
+}
+
+.pagination .page{
+    -fx-background-color: blue;
+}
+
+.pagination .pagination-control{
+    -fx-background-color: gray;
+}
+
+.pagination .pagination-control .bullet-button{
+    -fx-background-color: transparent, #DDF1F8, #0E5D79, white, white;
+}*/
+
+.pagination {
+   -fx-border-color: #0E5D79;
+/*   -fx-tooltip-visible:false;*/
+}
+
+.pagination .page {
+    -fx-background-color: #DDF1F8;
+/*    -fx-page-information-visible:false;
+    -fx-page-information-alignment:right;*/
+}
+
+.pagination .pagination-control {
+   -fx-background-color: #C8C6C6;  
+   -fx-cursor: hand;
+}
+
+.pagination .pagination-control .bullet-button {
+   -fx-background-color: transparent, #DDF1F8, #0E5D79, white, white;
+}
+
+.pagination .pagination-control .bullet-button:selected {  
+   -fx-background-color: transparent, #DDF1F8, #0E5D79, white, #0E5D79;
+}
+
+.pagination .pagination-control .left-arrow, .right-arrow{
+   -fx-background-color: #DDF1F8, #0E5D79;
+}
+

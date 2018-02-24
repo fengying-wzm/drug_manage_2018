@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="DrugManageApp.jnlp">
+  <information>
+    <title>DrugManageApp</title>
+    <vendor>zjj</vendor>
+    <description>null</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="DrugManageApp.jar" size="85024" download="eager" />
+    <jar href="lib\commons-beanutils-1.9.3.jar" size="246174" download="eager" />
+    <jar href="lib\commons-collections-3.2.2.jar" size="588337" download="eager" />
+    <jar href="lib\commons-lang-2.6.jar" size="284220" download="eager" />
+    <jar href="lib\commons-logging-1.2.jar" size="61829" download="eager" />
+    <jar href="lib\ezmorph-1.0.6.jar" size="86487" download="eager" />
+    <jar href="lib\json-lib-2.4-jdk15.jar" size="159123" download="eager" />
+  </resources>
+  <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="DrugManageApp" >
+    <param name="requiredFXVersion" value="8.0+"/>
+  </applet-desc>
+  <jfx:javafx-desc  width="800" height="600" main-class="com.drug.DrugManageApp"  name="DrugManageApp" />
+  <update check="always"/>
+</jnlp>

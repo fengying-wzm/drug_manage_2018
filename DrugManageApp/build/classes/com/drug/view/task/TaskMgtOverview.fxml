@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.drug.view.task.TaskMgtOverviewController">
+   <children>
+      <TabPane fx:id="tabPane" layoutX="-129.0" layoutY="8.0" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <tabs>
+          <Tab fx:id="taskTab" text="任务列表">
+               <content>
+                  <VBox prefHeight="400.0" prefWidth="600.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="37.0" prefWidth="600.0">
+                           <children>
+                              <Label prefHeight="15.0" text="任务类型：" />
+                              <ComboBox fx:id="taskType_cbox" prefHeight="23.0" prefWidth="90.0" />
+                              <Separator orientation="VERTICAL" prefHeight="8.0" prefWidth="30.0" />
+                              <Label prefHeight="15.0" text="任务状态：" />
+                              <ComboBox fx:id="taskStatus_cbox" prefHeight="23.0" prefWidth="90.0" />
+                              <Separator orientation="VERTICAL" prefHeight="8.0" prefWidth="30.0" />
+                              <Label prefHeight="15.0" text="派发给：" />
+                              <ComboBox fx:id="user_cbox" prefHeight="23.0" prefWidth="90.0" />
+                              <Separator orientation="VERTICAL" prefHeight="8.0" prefWidth="30.0" />
+                              <HBox alignment="CENTER" prefHeight="27.0" prefWidth="105.0" spacing="5.0">
+                                 <children>
+                                    <Button fx:id="queryBtn" mnemonicParsing="false" onAction="#getTasks" text="查询" />
+                                    <Button fx:id="addBtn" mnemonicParsing="false" onAction="#addTask" text="添加..." />
+                                 </children>
+                              </HBox>
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </HBox>
+                        <TableView fx:id="taskTableView" prefHeight="385.0" prefWidth="689.0" VBox.vgrow="ALWAYS">
+                          <columns>
+                            <TableColumn fx:id="assignedOnColumn" prefWidth="75.0" text="派发日期" />
+                            <TableColumn fx:id="typeColumn" prefWidth="75.0" text="类型" />
+                              <TableColumn fx:id="countColumn" prefWidth="75.0" text="派发条数" />
+                              <TableColumn fx:id="assignedToColumn" prefWidth="75.0" text="派发给" />
+                              <TableColumn fx:id="statusColumn" prefWidth="75.0" text="状态" />
+                              <TableColumn fx:id="processedCountColumn" prefWidth="75.0" text="已处理条数" />
+                              <TableColumn fx:id="startOnColumn" prefWidth="75.0" text="开始日期" />
+                              <TableColumn fx:id="completedOnColumn" prefWidth="75.0" text="完成日期" />
+                              <TableColumn fx:id="optColumn" prefWidth="75.0" text="操作" />
+                          </columns>
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
+                        </TableView>
+                     </children>
+                  </VBox>
+               </content>
+            </Tab>
+          <Tab fx:id="drugDicTab" text="药品字典数据">
+               <content>
+                  <VBox prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="37.0" prefWidth="600.0">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                           <children>
+                              <Label prefHeight="15.0" text="数据状态：" />
+                              <ComboBox fx:id="dataProcStatus_cbox" prefHeight="23.0" prefWidth="90.0" />
+                              <Separator orientation="VERTICAL" prefHeight="8.0" prefWidth="30.0" />
+                              <Label prefHeight="15.0" text="药品类型：" />
+                              <ComboBox fx:id="drugCategory_cbox" prefHeight="23.0" prefWidth="90.0" />
+                              <Separator orientation="VERTICAL" prefHeight="8.0" prefWidth="30.0" />
+                              <Label prefHeight="15.0" text="药品名称：" />
+                              <TextField fx:id="drugNameField" />
+                              <Separator orientation="VERTICAL" prefHeight="8.0" prefWidth="30.0" />
+                              <Label prefHeight="15.0" text="生产厂家：" />
+                              <ComboBox fx:id="mfr_cbox" prefHeight="23.0" prefWidth="90.0" />
+                              <Separator orientation="VERTICAL" prefHeight="8.0" prefWidth="30.0" />
+                              <Label prefHeight="15.0" text="治疗领域：" />
+                              <ComboBox prefHeight="23.0" prefWidth="90.0" />
+                              <Separator orientation="VERTICAL" prefHeight="8.0" prefWidth="30.0" />
+                              <HBox alignment="CENTER_LEFT" spacing="5.0" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="2.0" HBox.hgrow="SOMETIMES">
+                                       <children>
+                                          <Label text="查询结果：" />
+                                          <Label fx:id="resultTotalLbl" textFill="BLUE" />
+                                          <Label text="条   选择：第" />
+                                          <TextField fx:id="fromField" prefWidth="50.0" />
+                                          <Label text="条至第" />
+                                          <TextField fx:id="toField" prefWidth="50.0" />
+                                          <Label text="条" />
+                                       </children>
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                    </HBox>
+                                    <HBox alignment="CENTER_LEFT">
+                                       <children>
+                                          <Button fx:id="addToListBtn" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#addToList" text="添加至列表" />
+                                          <ComboBox fx:id="showList_cbox" minWidth="20.0" nodeOrientation="LEFT_TO_RIGHT" prefWidth="20.0" />
+                                       </children>
+                                    </HBox>
+                                    <Button fx:id="addToTaskBtn" mnemonicParsing="false" text="添加至任务" />
+                                 </children></HBox>
+                           </children>
+                        </HBox>
+                        <TableView fx:id="drugDictTableView" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                          <columns>
+                              <TableColumn fx:id="checkColumn" prefWidth="75.0" text="全选" />
+                            <TableColumn fx:id="appvNumberColumn" prefWidth="75.0" text="批准文号" />
+                            <TableColumn fx:id="genericCNameColumn" prefWidth="75.0" text="药品名（中文）" />
+                              <TableColumn fx:id="genericENameColumn" prefWidth="75.0" text="药品名（英文英文）" />
+                              <TableColumn fx:id="mdseCNameColumn" prefWidth="75.0" text="商品名（中文）" />
+                              <TableColumn fx:id="mdseENameColumn" prefWidth="75.0" text="商品名（英文）" />
+                              <TableColumn fx:id="drugCategoryColumn" prefWidth="75.0" text="药品类型" />
+                              <TableColumn fx:id="formulationColumn" prefWidth="75.0" text="剂型" />
+                              <TableColumn fx:id="drugUnitColumn" prefWidth="75.0" text="药品单位" />
+                              <TableColumn fx:id="mainDosageColumn" prefWidth="75.0" text="剂量（主）" />
+                              <TableColumn fx:id="mainDosageUnitColumn" prefWidth="75.0" text="剂量单位（主）" />
+                              <TableColumn fx:id="sndDosageColumn" prefWidth="75.0" text="剂量（次）" />
+                              <TableColumn fx:id="sndDosageUnitColumn" prefWidth="75.0" text="剂量单位（次）" />
+                              <TableColumn fx:id="specColumn" prefWidth="75.0" text="规格" />
+                              <TableColumn fx:id="specNoteColumn" prefWidth="75.0" text="规格备注" />
+                              <TableColumn fx:id="mainPkgUnitColumn" prefWidth="75.0" text="包装单位（一级）" />
+                              <TableColumn fx:id="mainPkgSpecColumn" prefWidth="75.0" text="包装规格（一级）" />
+                              <TableColumn fx:id="sndPkgUnitColumn" prefWidth="75.0" text="包装单位（二级）" />
+                              <TableColumn fx:id="sndPkgSpecColumn" prefWidth="75.0" text="包装规格（二级）" />
+                              <TableColumn fx:id="trdPkgUnitColumn" prefWidth="75.0" text="包装单位（三级）" />
+                              <TableColumn fx:id="mfrColumn" prefWidth="75.0" text="生产厂家" />
+                              <TableColumn fx:id="appvDateColumn" prefWidth="75.0" text="批准日期" />
+                              <TableColumn fx:id="orgAppvNumberColumn" prefWidth="75.0" text="原批准文号" />
+                              <TableColumn fx:id="stdCodeColumn" prefWidth="75.0" text="本位码" />
+                              <TableColumn fx:id="stdCodeNoteColumn" prefWidth="75.0" text="本位码备注" />
+                              <TableColumn fx:id="atcCodeColumn" prefWidth="75.0" text="ATC编码" />
+                              <TableColumn fx:id="ddStatusColumn" prefWidth="75.0" text="数据状态" />
+                          </columns>
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
+                        </TableView>
+                     </children>
+                  </VBox>
+               </content>
+            </Tab>
+            <Tab text="药品数据">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>

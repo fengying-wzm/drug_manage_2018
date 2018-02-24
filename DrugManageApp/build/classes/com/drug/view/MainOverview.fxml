@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.drug.view.MainOverviewController">
+   <top>
+      <MenuBar BorderPane.alignment="CENTER">
+        <menus>
+            <Menu fx:id="userMgtMenu" mnemonicParsing="false" />
+            <Menu fx:id="taskMgtMenu" mnemonicParsing="false" />
+            <Menu fx:id="drugDicMenu" mnemonicParsing="false" />
+            <Menu mnemonicParsing="false" text="帮助">
+              <items>
+                <MenuItem fx:id="exitMenuItem" mnemonicParsing="false" onAction="#close" text="退出" />
+                <MenuItem fx:id="aboutMenuItem" mnemonicParsing="false" onAction="#showAboutOverview" text="关于" />
+              </items>
+            </Menu>
+        </menus>
+      </MenuBar>
+   </top>
+</BorderPane>

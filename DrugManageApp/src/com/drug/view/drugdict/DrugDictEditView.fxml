@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="764.0" prefWidth="996.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <TitledPane animated="false" text="药品基本信息">
+         <content>
+            <GridPane prefHeight="324.0" prefWidth="800.0">
+               <children>
+                  <Label text="批准文号：" />
+                  <Label text="药品类型：" GridPane.columnIndex="2" />
+                  <Label text="药品名（中文）：" GridPane.rowIndex="1" />
+                  <Label text="商品名（中文）：" GridPane.rowIndex="2" />
+                  <Label text="药品名（英文）：" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                  <Label text="商品名（英文）：" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                  <Label text="批准日期：" GridPane.rowIndex="3" />
+                  <Label text="本位码：" GridPane.rowIndex="4" />
+                  <Label text="生产厂家：" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+                  <Label text="原批准文号：" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                  <Label text="本位码备注：" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                  <Label text="ATC编码：" GridPane.rowIndex="5" />
+                  <TextField GridPane.columnIndex="1" />
+                  <ComboBox prefHeight="23.0" prefWidth="333.0" GridPane.columnIndex="3" />
+                  <ComboBox prefHeight="23.0" prefWidth="334.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <TextField GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                  <TextField GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                  <ComboBox prefHeight="23.0" prefWidth="335.0" GridPane.columnIndex="3" GridPane.rowIndex="5" />
+                  <TextField GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <TextField GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                  <TextField GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                  <TextArea prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+                  <ComboBox prefHeight="23.0" prefWidth="342.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+               </children>
+               <columnConstraints>
+                  <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="178.0" minWidth="10.0" prefWidth="110.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="408.0" minWidth="0.0" prefWidth="330.0" />
+                  <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="426.0" minWidth="10.0" prefWidth="189.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="555.0" minWidth="10.0" prefWidth="330.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <padding>
+                  <Insets bottom="2.0" left="5.0" right="5.0" top="2.0" />
+               </padding>
+            </GridPane>
+         </content>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </TitledPane>
+      <TitledPane animated="false" prefHeight="407.0" prefWidth="996.0" text="药品包装信息" VBox.vgrow="ALWAYS">
+         <content>
+            <GridPane prefHeight="563.0" prefWidth="797.0">
+               <children>
+                  <Label text="剂型：" />
+                  <Label text="剂量（主）：" GridPane.rowIndex="2" />
+                  <Label text="单位：" GridPane.columnIndex="2" />
+                  <Label text="剂量单位（主）：" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                  <Label text="剂量（次）：" GridPane.rowIndex="3" />
+                  <Label text="规格：" GridPane.rowIndex="1" />
+                  <Label text="包装单位（一级）：" GridPane.rowIndex="4" />
+                  <Label text="包装单位（二级）：" GridPane.rowIndex="5" />
+                  <Label text="剂量单位（次）：" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                  <Label text="规格备注：" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                  <Label text="包装规格（一级）：" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                  <Label text="包装规格（二级）：" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+                  <Label text="包装单位（三级）：" GridPane.rowIndex="6" />
+                  <ComboBox prefHeight="23.0" prefWidth="300.0" GridPane.columnIndex="1" />
+                  <ComboBox prefHeight="23.0" prefWidth="300.0" GridPane.columnIndex="3" />
+                  <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <ComboBox prefWidth="300.0" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                  <TextField GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <ComboBox prefWidth="300.0" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                  <ComboBox prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                  <ComboBox prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                  <ComboBox prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                  <TextField GridPane.columnIndex="3" GridPane.rowIndex="4" />
+                  <TextField GridPane.columnIndex="3" GridPane.rowIndex="5" />
+                  <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <TextArea prefHeight="51.0" prefWidth="300.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+               </children>
+               <columnConstraints>
+                  <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="164.0" minWidth="10.0" percentWidth="15.0" prefWidth="140.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="342.0" minWidth="0.0" percentWidth="33.0" prefWidth="288.0" />
+                  <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="552.0" minWidth="10.0" percentWidth="22.0" prefWidth="198.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="514.0" minWidth="10.0" percentWidth="33.0" prefWidth="300.0" />
+                  <ColumnConstraints fillWidth="false" hgrow="SOMETIMES" maxWidth="514.0" minWidth="10.0" percentWidth="5.0" prefWidth="300.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+            </GridPane>
+         </content>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </TitledPane>
+   </children>
+</VBox>

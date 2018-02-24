@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.drug.view.drugdict.DrugDictOverviewController">
+   <children>
+      <VBox prefHeight="579.0" prefWidth="689.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <HBox alignment="CENTER_LEFT" prefHeight="42.0" prefWidth="600.0" spacing="10.0">
+               <children>
+                  <Button fx:id="searchBtn" mnemonicParsing="false" prefHeight="23.0" prefWidth="63.0" text="查询" />
+                  <Button fx:id="newBtn" mnemonicParsing="false" prefHeight="23.0" prefWidth="63.0" text="新建..." />
+               </children>
+               <padding>
+                  <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+               </padding>
+            </HBox>
+            <TableView fx:id="drugDicTableView" prefHeight="168.0" prefWidth="590.0">
+              <columns>
+                  <TableColumn fx:id="idColumn" prefWidth="75.0" text="ID" />
+                <TableColumn fx:id="cnameColumn" prefWidth="75.0" text="产品名称（中文）" />
+                <TableColumn fx:id="enameColumn" prefWidth="75.0" text="产品名称（英文）" />
+                  <TableColumn fx:id="mdseCNameColumn" prefWidth="75.0" text="商品名（中文）" />
+                  <TableColumn fx:id="mdseENameColumn" prefWidth="75.0" text="商品名（英文）" />
+                  <TableColumn fx:id="typeColumn" prefWidth="75.0" text="药品类别" />
+                  <TableColumn fx:id="dosageFormColumn" prefWidth="75.0" text="剂型" />
+                  <TableColumn fx:id="specColumn" prefWidth="75.0" text="规格" />
+                  <TableColumn fx:id="stdCodeColumn" prefWidth="75.0" text="药品本位码" />
+                  <TableColumn fx:id="appvNumberColumn" prefWidth="75.0" text="批准文号" />
+                  <TableColumn fx:id="origAppvNumberColumn" prefWidth="75.0" text="原批准文号" />
+                  <TableColumn fx:id="appvDateColumn" prefWidth="75.0" text="批准日期" />
+                  <TableColumn fx:id="mfrNameColumn" prefWidth="75.0" text="生产厂家" />
+                  <TableColumn fx:id="mfrAddrColumn" prefWidth="75.0" text="生产厂家地址" />
+                  <TableColumn fx:id="optColumn" prefWidth="75.0" text="操作" />
+              </columns>
+               <columnResizePolicy>
+                  <!--<TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />-->
+               </columnResizePolicy>
+            </TableView>
+            <Pagination fx:id="pagination" prefHeight="494.0" prefWidth="590.0">
+            </Pagination>
+         </children>
+      </VBox>
+   </children>
+   <padding>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
+</AnchorPane>
