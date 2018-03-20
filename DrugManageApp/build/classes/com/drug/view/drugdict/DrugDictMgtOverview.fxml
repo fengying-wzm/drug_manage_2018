@@ -19,14 +19,15 @@
                         <HBox alignment="CENTER_LEFT" prefHeight="37.0" prefWidth="600.0">
                            <children>
                               <Label prefHeight="15.0" text="任务类型：" />
-                              <ComboBox fx:id="taskType_cbox" prefHeight="23.0" prefWidth="90.0" />
+                              <ComboBox fx:id="taskType_cbox" onAction="#enableClearTaskFilter" prefHeight="23.0" prefWidth="90.0" />
                               <Separator orientation="VERTICAL" prefHeight="8.0" prefWidth="30.0" />
                               <Label prefHeight="15.0" text="任务状态：" />
-                              <ComboBox fx:id="taskStatus_cbox" prefHeight="23.0" prefWidth="90.0" />
+                              <ComboBox fx:id="taskStatus_cbox" onAction="#enableClearTaskFilter" prefHeight="23.0" prefWidth="90.0" />
                               <Separator orientation="VERTICAL" prefHeight="8.0" prefWidth="30.0" />
                               <HBox alignment="CENTER_LEFT" prefHeight="27.0" prefWidth="105.0" spacing="5.0">
                                  <children>
-                                    <Button fx:id="queryBtn" mnemonicParsing="false" onAction="#getTasks" text="查询" />
+                                    <CheckBox fx:id="taskFilter_clearChkBox" disable="true" mnemonicParsing="false" onAction="#clearTaskFilter" text="清空" />
+                                    <Button fx:id="queryTaskBtn" mnemonicParsing="false" onAction="#queryTasks" text="查询" />
                                  </children>
                               </HBox>
                            </children>
@@ -63,18 +64,27 @@
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </padding>
                            <children>
+                              <Label text="数据状态：" />
+                              <ComboBox fx:id="drugStatus_cbox" onAction="#enableClearDrugFilter" prefHeight="23.0" prefWidth="107.0" />
+                              <Separator orientation="VERTICAL" prefHeight="8.0" prefWidth="30.0" />
                               <Label prefHeight="15.0" text="药品类型：" />
-                              <ComboBox fx:id="drugCategory_cbox" prefHeight="23.0" prefWidth="90.0" />
+                              <ComboBox fx:id="drugCategory_cbox" onAction="#enableClearDrugFilter" prefHeight="23.0" prefWidth="90.0" />
                               <Separator orientation="VERTICAL" prefHeight="8.0" prefWidth="30.0" />
                               <Label prefHeight="15.0" text="药品名称：" />
-                              <TextField fx:id="drugNameField" />
+                              <TextField fx:id="drugNameField" onAction="#enableClearDrugFilter" />
                               <Separator orientation="VERTICAL" prefHeight="8.0" prefWidth="30.0" />
                               <Label prefHeight="15.0" text="生产厂家：" />
-                              <ComboBox fx:id="mfr_cbox" prefHeight="23.0" prefWidth="90.0" />
+                              <ComboBox fx:id="mfr_cbox" onAction="#enableClearDrugFilter" prefHeight="23.0" prefWidth="90.0" />
                               <Separator orientation="VERTICAL" prefHeight="8.0" prefWidth="30.0" />
-                              <Label prefHeight="15.0" text="治疗领域：" />
-                              <ComboBox prefHeight="23.0" prefWidth="90.0" />
+                              <Label disable="true" prefHeight="15.0" text="治疗领域：" />
+                              <ComboBox disable="true" prefHeight="23.0" prefWidth="90.0" />
                               <Separator orientation="VERTICAL" prefHeight="8.0" prefWidth="30.0" />
+                              <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <CheckBox fx:id="drugFilter_clearChkBox" disable="true" mnemonicParsing="false" onAction="#clearDrugFilter" text="清空" />
+                                    <Button fx:id="queryDrugBtn" mnemonicParsing="false" onAction="#queryDrugDicts" text="查询" />
+                                 </children>
+                              </HBox>
                            </children>
                         </HBox>
                         <TableView fx:id="drugDictTableView" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
@@ -105,7 +115,8 @@
                               <TableColumn fx:id="stdCodeNoteColumn" prefWidth="75.0" text="本位码备注" />
                               <TableColumn fx:id="atcCodeColumn" prefWidth="75.0" text="ATC编码" />
                               <TableColumn fx:id="ddStatusColumn" prefWidth="75.0" text="数据状态" />
-                              <TableColumn fx:id="optColumn" prefWidth="75.0" text="操作" />
+                              <TableColumn fx:id="ddTaskIdColumn" prefWidth="75.0" text="任务ID" />
+                              <TableColumn fx:id="optColumn" prefWidth="75.0" text="操作" visible="false" />
                           </columns>
                            <columnResizePolicy>
                               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -114,11 +125,6 @@
                      </children>
                   </VBox>
                </content>
-            </Tab>
-            <Tab text="药品数据">
-              <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-              </content>
             </Tab>
         </tabs>
       </TabPane>
