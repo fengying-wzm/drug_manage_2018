@@ -7,8 +7,9 @@ package com.drug.dao;
 
 import com.drug.entity.DrugDict;
 import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -16,9 +17,12 @@ import org.springframework.stereotype.Repository;
  * @author zjj
  */
 @Repository
-public interface IDrugDictDao extends CrudRepository<DrugDict, Long>{
-    @Query("select t from DrugDict t where t.genericCName like ?1")
-    public List<DrugDict> findFirst10ByGenericCName(String name);
+public interface IDrugDictDao extends JpaRepository<DrugDict, Long>,JpaSpecificationExecutor<DrugDict>{
+    public DrugDict findById(long id);
     
-    public List<DrugDict> findByMfrId(long mfrId);
+    @Query("select t.id from DrugDict t")
+    public List<Long> findIds();
+    
+    public List<DrugDict> findByTaskIdIn(List<Long> taskIds);
+    
 }

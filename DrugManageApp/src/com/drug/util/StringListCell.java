@@ -14,9 +14,9 @@ import javafx.scene.control.ListCell;
  * @author zjj
  * @param <Object>
  */
-public class StringListCell<Object> extends ListCell<Object>{
+public class StringListCell<T> extends ListCell<T>{
         @Override
-        protected void updateItem(Object item, boolean empty) {
+        protected void updateItem(T item, boolean empty) {
             super.updateItem(item, empty); 
             this.setText(null);
             this.setGraphic(null);

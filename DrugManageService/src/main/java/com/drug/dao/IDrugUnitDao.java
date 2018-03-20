@@ -5,7 +5,7 @@
  */
 package com.drug.dao;
 
-import com.drug.entity.DrugCategory;
+import com.drug.entity.DrugUnit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,6 +14,6 @@ import org.springframework.stereotype.Repository;
  * @author zjj
  */
 @Repository
-public interface IDrugCategoryDao extends JpaRepository<DrugCategory,Integer>{
+public interface IDrugUnitDao extends JpaRepository<DrugUnit, Integer>{
     
 }

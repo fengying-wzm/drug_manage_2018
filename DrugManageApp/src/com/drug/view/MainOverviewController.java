@@ -86,7 +86,7 @@ public class MainOverviewController implements Initializable {
         });
         this.taskMgtMenu.setGraphic(taskLbl);
         
-        Label drugDicLbl=new Label("药品维护");
+        Label drugDicLbl=new Label("药品字典维护");
         drugDicLbl.setOnMouseClicked(e->{
             this.showDrugDictMgtOverview();
         });

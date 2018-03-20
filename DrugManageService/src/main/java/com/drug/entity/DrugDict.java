@@ -8,6 +8,8 @@ package com.drug.entity;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -85,6 +87,13 @@ public class DrugDict implements Serializable {
     @Column(name="task_id")
     private Long taskId;
 
+    public DrugDict(){
+    
+    }
+    public DrugDict(Long id){
+        this.id=id;
+    }
+    
     public Long getId() {
         return id;
     }
@@ -333,6 +342,19 @@ public class DrugDict implements Serializable {
         this.taskId = taskId;
     }
     
-    
+    public static class DrugStatus{
+        public static final String NOASSIGNED="未分配";
+        public static final String ASSIGNED_MODIFY="已分配（修订）";
+        public static final String MODIFIED="修订完成";
+        public static final String ASSIGNED_CHECK="已分配（复核）";
+        public static final String CHECKED="复核完成";
+        
+        public static ObservableList<String> getDrugStatusList(){
+            ObservableList<String> drugStatusList=FXCollections.observableArrayList();
+            drugStatusList.addAll(NOASSIGNED,ASSIGNED_MODIFY,MODIFIED,ASSIGNED_CHECK,CHECKED);
+            
+            return drugStatusList;
+        }
+    }
 
 }

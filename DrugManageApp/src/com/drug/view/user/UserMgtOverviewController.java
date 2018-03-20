@@ -20,7 +20,8 @@ import com.drug.model.User;
 import com.drug.util.HttpMethod;
 import com.drug.util.IPaddress;
 import com.drug.util.StringListCell;
-import java.util.HashMap;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -29,6 +30,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.ListCell;
@@ -60,6 +62,8 @@ public class UserMgtOverviewController implements Initializable {
     @FXML
     private ComboBox authority_cBox;
     @FXML
+    private CheckBox clearFilterChkBox;
+    @FXML
     private Button queryBtn;
     @FXML
     private Button addBtn;
@@ -86,10 +90,44 @@ public class UserMgtOverviewController implements Initializable {
     public ObservableList<Map> userList;
     
     @FXML
+    private void enableClearFilter(){
+        this.clearFilterChkBox.setDisable(false);
+        this.clearFilterChkBox.setSelected(false);
+    }
+    @FXML
+    private void clearFilter(){
+        this.user_cBox.getSelectionModel().clearSelection();
+        this.role_cBox.getSelectionModel().clearSelection();
+        
+//        this.clearFilterChkBox.selectedProperty().set(false);
+        this.clearFilterChkBox.setDisable(true);
+    }
+    @FXML
     private ObservableList<User> getUsers(){
-        String jsonStr=HttpMethod.getGETString(IPaddress.MATHOD_GET_USER_DATA);
+        String name="";
+        int roleId=0;
+        
+        if (this.user_cBox.getSelectionModel().getSelectedItem()!=null){
+            name=(String)((Map)this.user_cBox.getSelectionModel().getSelectedItem()).get("name");
+        }
+        
+        if (this.role_cBox.getSelectionModel().getSelectedItem()!=null){
+            roleId=(int)((Map)this.role_cBox.getSelectionModel().getSelectedItem()).get("id");
+        }
+        
+        String param="";
+        try {
+            param = "?name="+URLEncoder.encode(name, "UTF-8")+"&roleId="+roleId;
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(UserMgtOverviewController.class.getName()).log(Level.INFO, null, ex);
+        }
+        
+        String jsonStr=HttpMethod.getGETString(IPaddress.MATHOD_GET_USERS_BY_NAME_AND_ROLE+param);
         JSONArray jsonArr=JSONArray.fromObject(jsonStr);
         List<User> userData=(List<User>)JSONArray.toCollection(jsonArr, User.class);
+        this.userData=FXCollections.observableArrayList(userData);
+//        this.userTableView.refresh();//不生效
+        this.userTableView.setItems(this.userData);
         
         return FXCollections.observableArrayList(userData);
     }
@@ -113,13 +151,13 @@ public class UserMgtOverviewController implements Initializable {
         
         String type_cn=null;
         switch(type){
-            case "view":
+            case VIEW:
                 type_cn="确定";
                 break;
-            case "edit":
+            case Edit:
                 type_cn="修改";
                 break;
-            case "add":
+            case ADD:
                 type_cn="添加";
                 break;
                 
@@ -145,12 +183,10 @@ public class UserMgtOverviewController implements Initializable {
         Optional<User> result=userEditDialog.showAndWait();
         if (result!=null && result.get()!=null){
             if (type.equals(ADD)){
-                Map<String,String> map=new HashMap<String,String>();
                 JSONObject jsonObj=JSONObject.fromObject(result.get());
-                map.put("user",jsonObj.toString());
-                
+                String jsonStr=jsonObj.toString();
 //                if (){
-                    String resultStr=(String)HttpMethod.sendPOSTString((HashMap<String, String>)map, "UTF-8");
+                    String resultStr=(String)HttpMethod.sendPOSTString(IPaddress.MATHOD_ADD_USER,jsonStr, "UTF-8");
                     jsonObj=JSONObject.fromObject(resultStr);
                     User newUser=(User)JSONObject.toBean(jsonObj, User.class);
                     
@@ -201,8 +237,11 @@ public class UserMgtOverviewController implements Initializable {
                         });
                         
                         delBtn.setOnAction(e->{
-                        //todo 调后台操作，删除数据
-                            this.getTableView().getItems().remove(this.getIndex(), this.getIndex()+1);
+                            User user=(User)this.getTableRow().getItem();
+                            String result=HttpMethod.getGETString(IPaddress.MATHOD_DELETE_USER+"?id="+user.getId());
+                            if (result!=null){
+                                this.getTableView().getItems().remove(this.getIndex(), this.getIndex()+1);
+                            }
                         });
                         
                         hbox.getChildren().addAll(editBtn,delBtn);
@@ -216,7 +255,6 @@ public class UserMgtOverviewController implements Initializable {
         });
         
 
-//            String jsonstr=HttpMethod.getGETString();
         this.userData=this.getUsers();
 
         this.user_cBox.setButtonCell(new StringListCell());

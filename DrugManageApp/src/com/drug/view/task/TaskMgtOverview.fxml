@@ -10,7 +10,7 @@
 
 <AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.drug.view.task.TaskMgtOverviewController">
    <children>
-      <TabPane fx:id="tabPane" layoutX="-129.0" layoutY="8.0" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <TabPane fx:id="tabPane" layoutX="-78.0" layoutY="-42.0" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
           <Tab fx:id="taskTab" text="任务列表">
                <content>
@@ -19,17 +19,18 @@
                         <HBox alignment="CENTER_LEFT" prefHeight="37.0" prefWidth="600.0">
                            <children>
                               <Label prefHeight="15.0" text="任务类型：" />
-                              <ComboBox fx:id="taskType_cbox" prefHeight="23.0" prefWidth="90.0" />
+                              <ComboBox fx:id="taskType_cbox" onAction="#enableClearTaskFilter" prefHeight="23.0" prefWidth="90.0" />
                               <Separator orientation="VERTICAL" prefHeight="8.0" prefWidth="30.0" />
                               <Label prefHeight="15.0" text="任务状态：" />
-                              <ComboBox fx:id="taskStatus_cbox" prefHeight="23.0" prefWidth="90.0" />
+                              <ComboBox fx:id="taskStatus_cbox" onAction="#enableClearTaskFilter" prefHeight="23.0" prefWidth="90.0" />
                               <Separator orientation="VERTICAL" prefHeight="8.0" prefWidth="30.0" />
                               <Label prefHeight="15.0" text="派发给：" />
-                              <ComboBox fx:id="user_cbox" prefHeight="23.0" prefWidth="90.0" />
+                              <ComboBox fx:id="user_cbox" onAction="#enableClearTaskFilter" prefHeight="23.0" prefWidth="90.0" />
                               <Separator orientation="VERTICAL" prefHeight="8.0" prefWidth="30.0" />
+                              <CheckBox fx:id="taskFilter_clearChkBox" disable="true" mnemonicParsing="false" onAction="#clearTaskFilter" text="清空" />
                               <HBox alignment="CENTER" prefHeight="27.0" prefWidth="105.0" spacing="5.0">
                                  <children>
-                                    <Button fx:id="queryBtn" mnemonicParsing="false" onAction="#getTasks" text="查询" />
+                                    <Button fx:id="queryBtn" mnemonicParsing="false" onAction="#queryTasks" text="查询" />
                                     <Button fx:id="addBtn" mnemonicParsing="false" onAction="#addTask" text="添加..." />
                                  </children>
                               </HBox>
@@ -46,7 +47,7 @@
                               <TableColumn fx:id="assignedToColumn" prefWidth="75.0" text="派发给" />
                               <TableColumn fx:id="statusColumn" prefWidth="75.0" text="状态" />
                               <TableColumn fx:id="processedCountColumn" prefWidth="75.0" text="已处理条数" />
-                              <TableColumn fx:id="startOnColumn" prefWidth="75.0" text="开始日期" />
+                              <TableColumn fx:id="startedOnColumn" prefWidth="75.0" text="开始日期" />
                               <TableColumn fx:id="completedOnColumn" prefWidth="75.0" text="完成日期" />
                               <TableColumn fx:id="optColumn" prefWidth="75.0" text="操作" />
                           </columns>
@@ -58,7 +59,7 @@
                   </VBox>
                </content>
             </Tab>
-          <Tab fx:id="drugDicTab" text="药品字典数据">
+          <Tab fx:id="drugDicTab" text="药品标准字典数据">
                <content>
                   <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
@@ -68,20 +69,23 @@
                            </padding>
                            <children>
                               <Label prefHeight="15.0" text="数据状态：" />
-                              <ComboBox fx:id="dataProcStatus_cbox" prefHeight="23.0" prefWidth="90.0" />
+                              <ComboBox fx:id="stdDictDataStatus_cbox" onAction="#enableClearStdDictFilter" prefHeight="23.0" prefWidth="90.0" />
                               <Separator orientation="VERTICAL" prefHeight="8.0" prefWidth="30.0" />
                               <Label prefHeight="15.0" text="药品类型：" />
-                              <ComboBox fx:id="drugCategory_cbox" prefHeight="23.0" prefWidth="90.0" />
+                              <ComboBox fx:id="stdDictDataCategory_cbox" onAction="#enableClearStdDictFilter" prefHeight="23.0" prefWidth="90.0" />
                               <Separator orientation="VERTICAL" prefHeight="8.0" prefWidth="30.0" />
                               <Label prefHeight="15.0" text="药品名称：" />
-                              <TextField fx:id="drugNameField" />
+                              <ComboBox fx:id="stdDictDataGenericName_cbox" onAction="#enableClearStdDictFilter" prefWidth="150.0" />
                               <Separator orientation="VERTICAL" prefHeight="8.0" prefWidth="30.0" />
                               <Label prefHeight="15.0" text="生产厂家：" />
-                              <ComboBox fx:id="mfr_cbox" prefHeight="23.0" prefWidth="90.0" />
+                              <ComboBox fx:id="stdDictDataMfr_cbox" onAction="#enableClearStdDictFilter" prefHeight="23.0" prefWidth="90.0" />
                               <Separator orientation="VERTICAL" prefHeight="8.0" prefWidth="30.0" />
-                              <Label prefHeight="15.0" text="治疗领域：" />
-                              <ComboBox prefHeight="23.0" prefWidth="90.0" />
+                              <Label disable="true" prefHeight="15.0" text="治疗领域：" />
+                              <ComboBox disable="true" onAction="#enableClearStdDictFilter" prefHeight="23.0" prefWidth="90.0" />
                               <Separator orientation="VERTICAL" prefHeight="8.0" prefWidth="30.0" />
+                              <CheckBox fx:id="stdDictFilter_clearChkBox" disable="true" mnemonicParsing="false" onAction="#clearStdDictFilter" text="清空" />
+                              <Separator orientation="VERTICAL" prefHeight="8.0" prefWidth="30.0" />
+                              <Button fx:id="queryStdDictBtn" mnemonicParsing="false" onAction="#queryStdDictData" text="查询" />
                               <HBox alignment="CENTER_LEFT" spacing="5.0" HBox.hgrow="ALWAYS">
                                  <children>
                                     <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="2.0" HBox.hgrow="SOMETIMES">
@@ -100,11 +104,11 @@
                                     </HBox>
                                     <HBox alignment="CENTER_LEFT">
                                        <children>
-                                          <Button fx:id="addToListBtn" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#addToList" text="添加至列表" />
+                                          <Button fx:id="addToListBtn" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#addStdDrugToList" text="添加至列表" />
                                           <ComboBox fx:id="showList_cbox" minWidth="20.0" nodeOrientation="LEFT_TO_RIGHT" prefWidth="20.0" />
                                        </children>
                                     </HBox>
-                                    <Button fx:id="addToTaskBtn" mnemonicParsing="false" text="添加至任务" />
+                                    <Button fx:id="addToTaskBtn" mnemonicParsing="false" onAction="#addStdDrugToTask" text="添加至任务" />
                                  </children></HBox>
                            </children>
                         </HBox>
@@ -146,7 +150,7 @@
                   </VBox>
                </content>
             </Tab>
-            <Tab text="药品数据">
+            <Tab text="药品医院字典数据">
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
               </content>

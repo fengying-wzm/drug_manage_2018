@@ -13,32 +13,19 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * 用户实体
+ * 药品包装单位实体
  * @author zjj
  */
 @Entity
-@Table(name="user")
-public class User implements Serializable{
+@Table(name="unit_package")
+public class DrugPkgUnit implements Serializable{
     @Id
     @GeneratedValue
     private int id;
-    @Column(name="user_name")
+    
+    @Column(name="name")
     private String name;
-    @Column(name="password")
-    private String password;
-    @Column(name="role_id")
-    private int roleId;
 
-    public User(){
-    
-    }
-    
-    /*获取用户下拉列表时有用，只返回用户id和name信息*/
-    public User(int id,String name){
-        this.id=id;
-        this.name=name;
-    }
-    
     public int getId() {
         return id;
     }
@@ -54,23 +41,6 @@ public class User implements Serializable{
     public void setName(String name) {
         this.name = name;
     }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public int getRoleId() {
-        return roleId;
-    }
-
-    public void setRoleId(int roleId) {
-        this.roleId = roleId;
-    }
     
     
-
 }

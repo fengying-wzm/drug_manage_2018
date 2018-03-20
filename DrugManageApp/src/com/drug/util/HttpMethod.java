@@ -92,28 +92,35 @@ public class HttpMethod {
 	}
         /**
          * 以POST方式发送字符串
-         * @param params 要发送的数组
+         * @param param 要发送的json字符串格式数据
          * @param encoding  发送的编码
          * @return  true返回成功，false返回失败
          * @throws Exception 
          */
-        public static Object  sendPOSTString(HashMap<String,String> params,String encoding) throws Exception{
+        public static String  sendPOSTString(String mathodName,String param,String encoding) throws Exception{
+            try{
+/* zjj-简单数据类型参数传递方式
         StringBuilder data = new StringBuilder();
         if (params != null && !params.isEmpty()) {
-                for (Map.Entry<String,String> entry: params.entrySet()) {
+                for (Map.Entry<String,Object> entry: params.entrySet()) {
                         data.append(entry.getKey()).append("=");
-                        data.append(URLEncoder.encode(entry.getValue(), encoding));
+//                        data.append(URLEncoder.encode(entry.getValue(), encoding));
+                        data.append(entry.getValue());
                         data.append("&");
                 }
                 data.deleteCharAt(data.length()-1);
         }
         byte[] entity = data.toString().getBytes();//得到实体数据
-        HttpURLConnection conn = (HttpURLConnection) new URL(IPaddress.IP_send_SITE).openConnection();
+*/
+        byte[] entity = param.getBytes();//得到字节数据
+        
+        HttpURLConnection conn = (HttpURLConnection) new URL(IPaddress.IP_send_SITE+mathodName).openConnection();
         conn.setConnectTimeout(5);
         conn.setRequestMethod("POST");
         conn.setDoOutput(true);//允许对外输出数据
 //        conn.setDoInput(true);
-        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+//        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");//zjj-简单数据类型参数传递方式
+        conn.setRequestProperty("Content-Type", "application/json");
         conn.setRequestProperty("Content-Length", String.valueOf(entity.length));
         OutputStream oStream = conn.getOutputStream();
         oStream.write(entity);
@@ -123,6 +130,12 @@ public class HttpMethod {
                 return new String(returnData);
 //                return true;
         }
-        return false;
-}
+        
+//        return false;
+        }catch(Exception ex){
+            Logger.getLogger(HttpMethod.class.getName()).log(Level.SEVERE, IPaddress.IP_get_SITE+mathodName+"调用异常！", ex);
+        }
+            
+        return null;
+    }
 }

@@ -14,16 +14,18 @@ import javafx.stage.Stage;
 import com.drug.model.Drug;
 import com.drug.model.DrugCategory;
 import com.drug.model.DrugDict;
+import com.drug.model.DrugGeneric;
 import com.drug.model.Task;
 import com.drug.model.User;
 import com.drug.util.HttpMethod;
 import com.drug.util.IPaddress;
-import com.drug.view.drugdict.DrugDictOverviewController;
+import com.drug.util.ServiceUtil;
 import com.drug.view.LoginOverviewController;
 import com.drug.view.MainOverviewController;
 import com.drug.view.drugdict.DrugDictMgtOverviewController;
 import com.drug.view.task.TaskMgtOverviewController;
 import com.drug.view.user.UserMgtOverviewController;
+import com.sun.org.apache.bcel.internal.generic.LoadClass;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -38,6 +40,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  *
@@ -59,8 +62,11 @@ public class DrugManageApp extends Application {
      */
     private ObservableList<String> dataProcStatusList;
     private ObservableList<DrugCategory> drugCategoryList;
+    private ObservableList<DrugGeneric> drugGenericList;
     private ObservableList<Map> mfrList;
-    private ObservableList<DrugDict> drugDictData;
+    
+    private ObservableList<DrugDict> stdDictData;
+    private Map<String,Object> currStdDictPage;
     
     private Map<String,Object> result;
 
@@ -144,32 +150,59 @@ public class DrugManageApp extends Application {
         if (this.drugCategoryList==null ){
             this.loadDrugCategory();
         }
+        if (this.drugGenericList==null){
+            this.loadDrugGeneric();
+        }
         if (this.mfrList==null){
             this.loadMfrList();
         }
         
         taskMgtOverviewController.setUserList(this.userList);
         taskMgtOverviewController.setDataProcStatusList(this.dataProcStatusList);
-        taskMgtOverviewController.setDrugCategoryList(drugCategoryList);
+        taskMgtOverviewController.setDrugCategoryList(this.drugCategoryList);
+        taskMgtOverviewController.setDrugGenericList(this.drugGenericList);
         taskMgtOverviewController.setMfrList(this.mfrList);
         
         ObservableList<Task> taskData=this.loadTaskData();
         taskMgtOverviewController.setTaskData(taskData);
         
         //        if (this.drugDictData==null){
-            this.loadDrugDictData();
+            this.loadStdDictData();
 //        }
         
-        taskMgtOverviewController.setDrugDictData(this.drugDictData);
+        taskMgtOverviewController.setStdDictData(this.stdDictData);
+        taskMgtOverviewController.setStdDictPage(this.currStdDictPage);
     }
     
     public void showDrugDictMgtOverview() throws Exception{
         DrugDictMgtOverviewController drugDictMgtOverviewController=(DrugDictMgtOverviewController)this.showMainSubOverview("view/drugdict/DrugDictMgtOverview.fxml");
         drugDictMgtOverviewController.setDrugManageApp(this);
         
-        this.loadTasksByAssignedTo(this.currUser.getId());
+        if (this.userList==null){
+            this.loadUserList();
+        }
+        if (this.dataProcStatusList==null){
+            this.loadDataProcStatus();
+        }
+        if (this.drugCategoryList==null ){
+            this.loadDrugCategory();
+        }
+        if (this.drugGenericList==null ){
+            this.loadDrugGeneric();
+        }
+        if (this.mfrList==null){
+            this.loadMfrList();
+        }
         
-//        String jsonstr=HttpMethod.getGETString();
+        drugDictMgtOverviewController.setUserList(this.userList);
+        drugDictMgtOverviewController.setTaskData(this.loadTasksByAssignedTo(this.currUser.getId()));
+        
+        drugDictMgtOverviewController.setDrugCategoryList(this.drugCategoryList);
+        drugDictMgtOverviewController.setMfrList(this.mfrList);
+        List<Long> taskIds=this.loadTaskIdsByStatusAndAssignedTo(Task.TaskStatus.IN_PROCESS, this.currUser.getId());
+        if (taskIds!=null){
+            drugDictMgtOverviewController.setDrugDictData(this.loadStdDictsByTaskIds(taskIds));
+        }
     }
     
     public void showAboutOverview() throws Exception{
@@ -192,19 +225,11 @@ public class DrugManageApp extends Application {
     }
     
     private ObservableList<Map> loadUserList(){
-        this.userList=FXCollections.observableArrayList();
-        Map<String,Object> obj=new HashMap();
-        obj.put("id", 1);
-        obj.put("name","a" );
-        this.userList.add(obj);
-        obj=new HashMap();
-        obj.put("id", 2);
-        obj.put("name","b" );
-        this.userList.add(obj);
-        obj=new HashMap();
-        obj.put("id", 3);
-        obj.put("name","c" );
-        this.userList.add(obj);
+        String mathodName=IPaddress.MATHOD_GET_USER_LIST;
+        String resultJson=HttpMethod.getGETString(mathodName);
+        JSONArray jsonArray=JSONArray.fromObject(resultJson);
+        List<Map> result=(List<Map>)JSONArray.toCollection(jsonArray, Map.class);
+        this.userList=FXCollections.observableArrayList(result);
         
         return this.userList;
     }
@@ -258,14 +283,7 @@ public class DrugManageApp extends Application {
     }
     
     private ObservableList<String> loadDataProcStatus(){
-        this.dataProcStatusList=FXCollections.observableArrayList(
-            "未分配",
-            "已分配（修订）",
-            "修订完成",
-            "已分配（复核）",
-            "复核完成"
-        );
-        
+        this.dataProcStatusList=DrugDict.DrugStatus.getDrugStatusList();
         return this.dataProcStatusList;
     }
     
@@ -302,20 +320,39 @@ public class DrugManageApp extends Application {
         return this.mfrList;
     }
     
-    private ObservableList<DrugDict> loadDrugDictData(){
+    private ObservableList<DrugDict> loadStdDictData(){
         try {
-            String url=IPaddress.MATHOD_GET_TOP10_BY_GENERIC_CNAME+"?name="+URLEncoder.encode("阿莫西林分散片", "UTF-8");
-            String jsonstr=HttpMethod.getGETString(url);
-            JSONArray jsonArray=JSONArray.fromObject(jsonstr);
+            String mathodName=IPaddress.MATHOD_GET_STD_DICT_DATA;
+            String jsonstr=HttpMethod.getGETString(mathodName);
+            JSONObject jsonObj=JSONObject.fromObject(jsonstr);
+            this.currStdDictPage=(Map<String,Object>)JSONObject.toBean(jsonObj,Map.class);//因暂时未引spring框架，所以Page对象用不了，后续考虑用spring-boot-javafx搭建项目
+            JSONArray jsonArray=JSONArray.fromObject(this.currStdDictPage.get("content"));
             List<DrugDict> drugDictData=(List<DrugDict>)JSONArray.toCollection(jsonArray, DrugDict.class);
-            this.drugDictData=FXCollections.observableArrayList(drugDictData);
+            this.stdDictData=FXCollections.observableArrayList(drugDictData);
             
-            return this.drugDictData;
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(DrugManageApp.class.getName()).log(Level.INFO, IPaddress.MATHOD_GET_TOP10_BY_GENERIC_CNAME+"方法调用异常！", ex);
+            return this.stdDictData;
+        } catch (Exception ex) {
+            Logger.getLogger(DrugManageApp.class.getName()).log(Level.INFO, IPaddress.MATHOD_GET_STD_DICT_DATA+"方法调用异常！", ex);
         }
         
         return null;
+    }
+    private ObservableList<DrugDict> loadStdDictsByTaskIds(List<Long> taskIds){
+        ObservableList<DrugDict> result=null;
+        
+        try {
+            JSONArray jsonArr=JSONArray.fromObject(taskIds);
+            String mathodName=IPaddress.MATHOD_GET_STD_DICTS_BY_TASK_IDS+"?ids="+jsonArr.toString();
+            String jsonstr=HttpMethod.getGETString(mathodName);
+            JSONArray jsonArray=JSONArray.fromObject(jsonstr);
+            List<DrugDict> drugDictData=(List<DrugDict>)JSONArray.toCollection(jsonArray, DrugDict.class);
+            result=FXCollections.observableArrayList(drugDictData);
+            
+        } catch (Exception ex) {
+            Logger.getLogger(DrugManageApp.class.getName()).log(Level.INFO, IPaddress.MATHOD_GET_STD_DICT_DATA+"方法调用异常！", ex);
+        }
+        
+        return result;
     }
     
     private ObservableList<DrugCategory> loadDrugCategory() throws Exception{
@@ -327,27 +364,47 @@ public class DrugManageApp extends Application {
         
         return this.drugCategoryList;
     }
+    private ObservableList<DrugGeneric> loadDrugGeneric() throws Exception{
+        String result=HttpMethod.getGETString(IPaddress.MATHOD_GET_DRUG_GENERIC_LIST);
+        JSONArray jsonArray=JSONArray.fromObject(result);
+        List<DrugGeneric> drugGenericList=(List<DrugGeneric>)JSONArray.toCollection(jsonArray, DrugGeneric.class);
+        
+        this.drugGenericList=FXCollections.observableArrayList(drugGenericList);
+        
+        return this.drugGenericList;
+    }
     
     private ObservableList<Task> loadTaskData(){
-        ObservableList<Task> result=FXCollections.observableArrayList();
-        result.addAll(
-            new Task(Task.TaskType.MODIFY_DICT, 1000, 2),
-            new Task(Task.TaskType.CHECK_DICT, 1000, 2),
-            new Task(Task.TaskType.MODIFY_DICT, 1000, 3),
-            new Task(Task.TaskType.MODIFY_DICT, 1000, 3),
-            new Task(Task.TaskType.CHECK_DICT, 1000, 3)
-        );
+        String resultJson=HttpMethod.getGETString(IPaddress.MATHOD_GET_TASK_DATA);
+        JSONArray jsonArray=JSONArray.fromObject(resultJson);
+        List<Task> result=(List<Task>)JSONArray.toCollection(jsonArray, Task.class);
+        ObservableList<Task> taskData=FXCollections.observableArrayList(result);
         
-        return result;
+        return taskData;
     }
     
     private ObservableList<Task> loadTasksByAssignedTo(int id){
         String jsonStr=HttpMethod.getGETString(IPaddress.MATHOD_GET_TASKS_BY_ASSIGNED_TO+"?id="+id);
         JSONArray jsonArr=JSONArray.fromObject(jsonStr);
-        List<Task> result=(List<Task>)JSONArray.toCollection(jsonArr,Task.class);
+        List<Task> result=(List<Task>)JSONArray.toCollection(jsonArr, Task.class);
         return FXCollections.observableArrayList(result);
     }
     
+    private List<Long> loadTaskIdsByStatusAndAssignedTo(String status,int userId){
+        List<Long> taskIds=null;
+        
+        try {
+                String mathodName=IPaddress.MATHOD_GET_TASK_IDS_BY_STATUS_AND_ASSIGNED_TO+"?status="+URLEncoder.encode(status, "UTF-8")+"&id="+userId;
+                String jsonStr=HttpMethod.getGETString(mathodName);
+                JSONArray jsonArr=JSONArray.fromObject(jsonStr);
+                taskIds=(List<Long>)JSONArray.toCollection(jsonArr, Long.class);
+               
+        } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(DrugManageApp.class.getName()).log(Level.INFO, "查询任务ids出错！", ex);
+        }
+        
+        return taskIds;
+    }
     public ObservableList<Map> getUserList(){
         return this.userList;
     }
@@ -363,6 +420,10 @@ public class DrugManageApp extends Application {
      
     public Stage getPrimaryStage(){
         return this.primaryStage;
+    }
+    
+    public User getCurrentUser(){
+        return this.currUser;
     }
     
     public void setCurrentUser(User user){

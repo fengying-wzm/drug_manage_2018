@@ -16,8 +16,6 @@ import javafx.beans.property.StringProperty;
  */
 public class User implements IModel{
     
-    public static int count;
-    
     private final IntegerProperty id;
     private final StringProperty name;
     private final StringProperty password;
@@ -29,8 +27,7 @@ public class User implements IModel{
     }
     
     public User(String name,String pwd,int roleId) {
-        this.count+=1;
-        this.id=new SimpleIntegerProperty(this.count);
+        this.id=new SimpleIntegerProperty();
         this.name=new SimpleStringProperty(name);
         this.password=new SimpleStringProperty(pwd);
         this.roleId=new SimpleIntegerProperty(roleId);

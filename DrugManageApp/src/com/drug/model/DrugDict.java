@@ -17,6 +17,8 @@ import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  * 药品字典实体
@@ -368,5 +370,18 @@ public class DrugDict{
         return taskId;
     }
     
-    
+    public static class DrugStatus{
+        public static final String NOASSIGNED="未分配";
+        public static final String ASSIGNED_MODIFY="已分配（修订）";
+        public static final String MODIFIED="修订完成";
+        public static final String ASSIGNED_CHECK="已分配（复核）";
+        public static final String CHECKED="复核完成";
+        
+        public static ObservableList<String> getDrugStatusList(){
+            ObservableList<String> drugStatusList=FXCollections.observableArrayList();
+            drugStatusList.addAll(NOASSIGNED,ASSIGNED_MODIFY,MODIFIED,ASSIGNED_CHECK,CHECKED);
+            
+            return drugStatusList;
+        }
+    }
 }

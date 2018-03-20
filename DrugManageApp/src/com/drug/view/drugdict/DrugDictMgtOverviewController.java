@@ -9,18 +9,33 @@ import com.drug.view.task.*;
 import com.drug.DrugManageApp;
 import com.drug.model.DrugCategory;
 import com.drug.model.DrugDict;
+import com.drug.model.DrugDosageUnit;
+import com.drug.model.DrugFormulation;
+import com.drug.model.DrugPkgUnit;
+import com.drug.model.DrugUnit;
 import com.drug.model.Task;
+import com.drug.util.HttpMethod;
+import com.drug.util.IPaddress;
 import com.drug.util.StringListCell;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
@@ -32,11 +47,16 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * FXML Controller class
@@ -45,9 +65,8 @@ import javafx.scene.layout.HBox;
  */
 public class DrugDictMgtOverviewController implements Initializable {
 
-    public static final String ADD="add";
-    public static final String Edit="edit";
-    public static final String VIEW="view";
+    public static final String MODIFY="modify";
+    public static final String CHECK="check";
     
     @FXML
     private TabPane tabPane;
@@ -59,9 +78,10 @@ public class DrugDictMgtOverviewController implements Initializable {
     private ComboBox<String> taskType_cbox;
     @FXML
     private ComboBox<String> taskStatus_cbox;
-
     @FXML
-    private Button queryBtn;
+    private CheckBox taskFilter_clearChkBox;
+    @FXML
+    private Button queryTaskBtn;
     
     @FXML
     private TableView<Task> taskTableView;
@@ -71,6 +91,8 @@ public class DrugDictMgtOverviewController implements Initializable {
     private TableColumn<Task,String> typeColumn;
     @FXML
     private TableColumn<Task,Integer> countColumn;
+    @FXML
+    private TableColumn<Task,String> assignedToColumn;
     @FXML
     private TableColumn<Task,String> statusColumn;
     @FXML
@@ -84,6 +106,8 @@ public class DrugDictMgtOverviewController implements Initializable {
     
     /*****************字典数据tab*****************/
     @FXML
+    private ComboBox<String> drugStatus_cbox;
+    @FXML
     private ComboBox<DrugCategory> drugCategory_cbox;
     @FXML
     private ComboBox<Map> mfr_cbox;
@@ -91,7 +115,10 @@ public class DrugDictMgtOverviewController implements Initializable {
 //    private ComboBox<Map> atc_cbox;
     @FXML
     private TextField drugNameField;
-    
+    @FXML
+    private CheckBox drugFilter_clearChkBox;
+    @FXML
+    private Button queryDrugBtn;
     @FXML
     private TableView<DrugDict> drugDictTableView;
     
@@ -148,81 +175,218 @@ public class DrugDictMgtOverviewController implements Initializable {
     @FXML
     private TableColumn<DrugDict,String> ddStatusColumn;
     @FXML
+    private TableColumn<DrugDict,Long> ddTaskIdColumn;
+    @FXML
     private TableColumn<DrugDict,String> optColumn;
     
-    private ObservableList<Map> mfrList;
-    private ObservableList<DrugCategory> drugCategoryList;
-    
+    private ObservableList<Map> userList;
     private ObservableList<Task> taskData;
+    
+    private ObservableList<String> drugStatusList;
+    private ObservableList<DrugCategory> drugCategoryList;
+    private ObservableList<Map> mfrList;
     
     private ObservableList<DrugDict> drugDictData;
    
     private DrugManageApp drugManageApp;
     
+    private DateTimeFormatter dateTimeFormatter;
+    
 
     @FXML
-    private ObservableList<Task> getTasks(){
+    private void enableClearTaskFilter(){
+        this.taskFilter_clearChkBox.setDisable(false);
+        this.taskFilter_clearChkBox.setSelected(false);
+    }
+    @FXML
+    private void clearTaskFilter(){
+        this.taskType_cbox.getSelectionModel().clearSelection();
+        this.taskStatus_cbox.getSelectionModel().clearSelection();
+        
+        this.taskFilter_clearChkBox.setDisable(true);
+    }
+    @FXML
+    private ObservableList<Task> queryTasks(){
+        try {
+            String taskType=this.taskType_cbox.getSelectionModel().getSelectedItem();
+            String taskStatus=this.taskStatus_cbox.getSelectionModel().getSelectedItem();
+            String param="?userId="+this.drugManageApp.getCurrentUser().getId();
+            if (taskType!=null){
+                param+="&type="+URLEncoder.encode(taskType,"UTF-8");
+            }
+            if (taskStatus!=null){
+                param+="&status="+URLEncoder.encode(taskStatus,"UTF-8");
+            }
+
+            String jsonStr=HttpMethod.getGETString(IPaddress.MATHOD_GET_TASKS_BY_TYPE_AND_STATUS_AND_ASSIGNEDTO+param);
+            JSONArray jsonArr=JSONArray.fromObject(jsonStr);
+            List<Task> result=(List<Task>)JSONArray.toCollection(jsonArr, Task.class);
+            this.taskData=FXCollections.observableArrayList(result);
+            this.taskTableView.setItems(this.taskData);
+            
+            return this.taskData;
+        } catch (Exception e) {
+            Logger.getLogger(DrugDictMgtOverviewController.class.getName()).log(Level.INFO, "URLEncoder.encode()出错！", e);
+        }
+        
+        return null;
+    }
+   @FXML
+   private ObservableList<DrugDict> queryDrugDicts(){
+       try {
+            List<Long> taskIds=this.getTaskIdsByStatusAndAssignedTo(Task.TaskStatus.IN_PROCESS, this.drugManageApp.getCurrentUser().getId());
+            if (taskIds==null){
+                this.drugDictData=null;
+                this.drugDictTableView.setItems(null);
+                return null;
+            }
+       
+            long mfrId=0;
+            if (this.mfr_cbox.getSelectionModel().getSelectedItem()!=null){
+                mfrId=Long.parseLong(this.mfr_cbox.getSelectionModel().getSelectedItem().get("id").toString());
+            }
+            
+            String mathodName=IPaddress.MATHOD_GET_STD_DICT_DATA+"?mfrId="+mfrId;
+             
+            String drugStatus=this.drugStatus_cbox.getSelectionModel().getSelectedItem();
+            if (drugStatus!=null){
+                mathodName+="&status="+URLEncoder.encode(drugStatus,"UTF-8");
+            }
+            
+            if (this.drugCategory_cbox.getSelectionModel().getSelectedItem()!=null){
+                String drugCategory=this.drugCategory_cbox.getSelectionModel().getSelectedItem().getName();
+                mathodName+="&category="+URLEncoder.encode(drugCategory,"UTF-8");
+            }
+            
+            String drugName=this.drugNameField.getText();
+            if (drugName!=null && !drugName.isEmpty() && !drugName.trim().isEmpty()){
+                mathodName+="&name="+URLEncoder.encode(drugName, "UTF-8");
+            }
+            
+            JSONArray jsonArr=JSONArray.fromObject(taskIds);
+            mathodName+="&taskIds="+jsonArr.toString();
+            
+            String jsonstr=HttpMethod.getGETString(mathodName);
+            JSONObject jsonObj=JSONObject.fromObject(jsonstr);
+            Map<String,Object> page=(Map<String,Object>)JSONObject.toBean(jsonObj, Map.class);
+            jsonArr=JSONArray.fromObject(page.get("content"));
+            List<DrugDict> result=(List<DrugDict>)JSONArray.toCollection(jsonArr, DrugDict.class);
+            this.drugDictData=FXCollections.observableArrayList(result);
+            this.drugDictTableView.setItems(this.drugDictData);
+            
+            return this.drugDictData;
+            
+       } catch (Exception e) {
+           Logger.getLogger(DrugDictMgtOverviewController.class.getName()).log(Level.INFO,null,e);
+       }
+       
+       return null;
+   }
+    @FXML
+    private void enableClearDrugFilter(){
+        this.drugFilter_clearChkBox.setDisable(false);
+        this.drugFilter_clearChkBox.setSelected(false);
+    }
+    @FXML
+    private void clearDrugFilter(){
+        this.drugStatus_cbox.getSelectionModel().clearSelection();
+        this.drugCategory_cbox.getSelectionModel().clearSelection();
+        this.drugNameField.setText(null);
+        this.mfr_cbox.getSelectionModel().clearSelection();
+        
+        this.drugFilter_clearChkBox.setDisable(true);
+    }
+    
+    private List<Long> getTaskIdsByStatusAndAssignedTo(String status,int userId){
+        try {
+            String mathodName=IPaddress.MATHOD_GET_TASK_IDS_BY_STATUS_AND_ASSIGNED_TO+"?id="+userId;
+            if (status!=null){
+                mathodName+="&status="+URLEncoder.encode(status,"UTF-8");
+            }
+            String jsonstr=HttpMethod.getGETString(mathodName);
+            JSONArray jsonArr=JSONArray.fromObject(jsonstr);
+            List<Long> taskIds=(List<Long>)JSONArray.toCollection(jsonArr, Long.class);
+
+            return taskIds;
+        } catch (Exception e) {
+            Logger.getLogger(DrugDictMgtOverviewController.class.getName());
+        }
+        
         return null;
     }
     
-    private void popupDrugDictInfoDialog(String title,String type,Task task) throws Exception{
-       FXMLLoader loader=new FXMLLoader();
-        loader.setLocation(this.getClass().getResource("TaskEditView.fxml"));
-        GridPane userEditView=loader.load();
-        TaskEditViewController taskEditViewController=loader.getController();
-//        taskEditViewController.setUserList(this.userList);
+    private ObservableList<DrugFormulation> drugFormulationList;
+    private ObservableList<DrugUnit> drugUnitList;
+    private ObservableList<DrugDosageUnit> drugDosageUnitList;
+    private ObservableList<DrugPkgUnit> drugPkgUnitList;
+    private void popupDrugDictInfoDialog(String title,String type,DrugDict drugDict) throws Exception{
+        FXMLLoader loader=new FXMLLoader();
+        loader.setLocation(this.getClass().getResource("DrugDictEditView.fxml"));
+        VBox drugDictEditView=loader.load();
+        DrugDictEditViewController drugDictEditViewController=loader.getController();
         
-//        if (!type.equals(ADD)){
-            taskEditViewController.setTask(task);
-//        }
+        String jsonstr=HttpMethod.getGETString(IPaddress.MATHOD_GET_DRUG_FORMULATION_LIST);
+        JSONArray jsonArray=JSONArray.fromObject(jsonstr);
+        List<DrugFormulation> dfresult=(List<DrugFormulation>)JSONArray.toCollection(jsonArray, DrugFormulation.class);
+        this.drugFormulationList=FXCollections.observableList(dfresult);
         
-        Dialog taskEditDialog=new Dialog();
-        taskEditDialog.setTitle(title);
+        jsonstr=HttpMethod.getGETString(IPaddress.MATHOD_GET_DRUG_UNIT_LIST);
+        jsonArray=JSONArray.fromObject(jsonstr);
+        List<DrugUnit> duresult=(List<DrugUnit>)JSONArray.toCollection(jsonArray,DrugUnit.class);
+        this.drugUnitList=FXCollections.observableList(duresult);
+        
+        jsonstr=HttpMethod.getGETString(IPaddress.MATHOD_GET_DRUG_DOSAGE_UNIT_LIST);
+        jsonArray=JSONArray.fromObject(jsonstr);
+        List<DrugDosageUnit> dduresult=(List<DrugDosageUnit>)JSONArray.toCollection(jsonArray,DrugDosageUnit.class);
+        this.drugDosageUnitList=FXCollections.observableList(dduresult);
+        
+        jsonstr=HttpMethod.getGETString(IPaddress.MATHOD_GET_DRUG_PKG_UNIT_LIST);
+        jsonArray=JSONArray.fromObject(jsonstr);
+        List<DrugPkgUnit> dpuresult=(List<DrugPkgUnit>)JSONArray.toCollection(jsonArray,DrugPkgUnit.class);
+        this.drugPkgUnitList=FXCollections.observableList(dpuresult);
+        
+        drugDictEditViewController.setDrugCategoryList(this.drugCategoryList);
+//        drugDictEditViewController.setDrugGenericList(this.drug);
+        drugDictEditViewController.setDrugFormulationList(this.drugFormulationList);
+        drugDictEditViewController.setDrugMfrList(this.mfrList);
+        drugDictEditViewController.setDrugUnitList(this.drugUnitList);
+        drugDictEditViewController.setDrugDosageUnitList(this.drugDosageUnitList);
+        drugDictEditViewController.setDrugPkgUnitList(this.drugPkgUnitList);
+        
+        drugDictEditViewController.setDrugDict(drugDict);
+        
+        Dialog drugDictEditDialog=new Dialog();
+        drugDictEditDialog.setTitle(title);
         
         String type_cn=null;
         switch(type){
-            case "view":
-                type_cn="确定";
+            case MODIFY:
+                type_cn="修订完成";
                 break;
-            case "edit":
-                type_cn="修改";
+            case CHECK:
+                type_cn="复核完成";
                 break;
-            case "add":
-                type_cn="添加";
-                break;
-                
         }
         ButtonType okBtn=new ButtonType(type_cn, ButtonBar.ButtonData.OK_DONE);
-        taskEditDialog.getDialogPane().getButtonTypes().addAll(okBtn,ButtonType.CANCEL);
-        taskEditDialog.getDialogPane().setContent(userEditView);
-        if (!type.equals(VIEW)){
-            taskEditDialog.setResultConverter(btnType->{
-                if (btnType==okBtn){
-                    Task atask=new Task();
-                    atask.setType(taskEditViewController.type_cbox.getValue());
-                    atask.setCount(Integer.parseInt(taskEditViewController.countField.getText()));
-                    atask.setAssignedToId((int)taskEditViewController.assignedTo_cbox.getValue().get("id"));
-                    return atask;
-                }
+        drugDictEditDialog.getDialogPane().getButtonTypes().addAll(okBtn,ButtonType.CANCEL);
+        drugDictEditDialog.getDialogPane().setContent(drugDictEditView);
+        drugDictEditDialog.setResultConverter(btnType->{
+            if (btnType==okBtn){
+                DrugDict adrug=new DrugDict();
+//                atask.setType(durgDictEditViewController.type_cbox.getValue());
+//                atask.setCount(Integer.parseInt(taskEditViewController.countField.getText()));
+//                atask.setAssignedToId((int)taskEditViewController.assignedTo_cbox.getValue().get("id"));
+                return adrug;
+            }
 
-                return null;
-            });
-        }
+            return null;
+        });
         
-        Optional<Task> result=taskEditDialog.showAndWait();
-        if (result.get()!=null){
-            if (type.equals(ADD)){
-                //todo保存至数据库
-                this.taskData.add(result.get());
-            }
-            
-            if (type.equals(Edit)){
-                //todo 保存至数据库
-                task.setAssignedOn(LocalDate.now());
-                task.setType(result.get().getType());
-                task.setAssignedToId(result.get().getAssignedToId());
-                this.taskTableView.refresh();
-            }
+        Optional<DrugDict> result=drugDictEditDialog.showAndWait();
+        if (result!=null && result.get()!=null){
+//            drugDict.set(result.get().getType());
+//            drugDict.setAssignedToId(result.get().getAssignedToId());
+            this.drugDictTableView.refresh();
         } 
     }
     /**
@@ -230,16 +394,17 @@ public class DrugDictMgtOverviewController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        this.dateTimeFormatter=DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        
         this.taskType_cbox.setItems(Task.TaskType.getTaskType());
         this.taskStatus_cbox.setItems(Task.TaskStatus.getTaskStatus());
         
         this.assignedOnColumn.setCellValueFactory(new PropertyValueFactory("assignedOn"));
         this.typeColumn.setCellValueFactory(new PropertyValueFactory("type"));
         this.countColumn.setCellValueFactory(new PropertyValueFactory("count"));
-        
         this.statusColumn.setCellValueFactory(new PropertyValueFactory("status"));
         this.processedCountColumn.setCellValueFactory(new PropertyValueFactory("processedCount"));
-        this.startOnColumn.setCellValueFactory(new PropertyValueFactory("startOn"));
+        this.startOnColumn.setCellValueFactory(new PropertyValueFactory("startedOn"));
         this.completedOnColumn.setCellValueFactory(new PropertyValueFactory("completedOn"));
         
         this.taskOptColumn.setCellFactory(col->{
@@ -253,16 +418,47 @@ public class DrugDictMgtOverviewController implements Initializable {
                     if (!empty){
                         HBox hbox=new HBox();
                         hbox.setAlignment(Pos.CENTER);
-                        Button startTaskBtn=new Button("开始");
+                        Button startTaskBtn=new Button();
                         hbox.getChildren().addAll(startTaskBtn);
                         
                         Task task=(Task)this.getTableRow().getItem();
-                        if (task!=null && !task.getStatus().equals(Task.TaskStatus.HAS_ASSIGNED)){
-                            startTaskBtn.setDisable(false);
+                        if (task!=null){
+                            switch(task.getStatus()){
+                                case Task.TaskStatus.HAS_ASSIGNED:
+                                    startTaskBtn.setText("开始");
+                                    break;
+                                case Task.TaskStatus.IN_PROCESS:
+                                    startTaskBtn.setText("完成");
+                                    break;
+                                case Task.TaskStatus.COMPLETED:
+                                    startTaskBtn.setText("完成");
+                                    startTaskBtn.setDisable(true);
+                                    break;
+                            }
                         }
                         
                         startTaskBtn.setOnAction(e->{
-                            
+                            try {
+                                JSONObject jsonObj=JSONObject.fromObject(task);
+                                String methodName=startTaskBtn.getText().equals("开始")?IPaddress.MATHOD_START_TASK:IPaddress.MATHOD_COMPLETE_TASK;
+                                String jsonStr=HttpMethod.sendPOSTString(methodName+"?id="+task.getId(),jsonObj.toString(),"UTF-8");
+                                if (jsonStr!=null){
+                                    jsonObj=JSONObject.fromObject(jsonStr);
+                                    Task updatedTask=(Task)JSONObject.toBean(jsonObj, Task.class);
+                                    task.setStartedOn(updatedTask.getStartedOn());
+                                    task.setCompletedOn(updatedTask.getCompletedOn());
+                                    task.setStatus(updatedTask.getStatus());
+                                    
+                                    if (startTaskBtn.getText().equals("开始")){
+                                        startTaskBtn.setText("完成");
+                                    }
+                                    else{
+                                        startTaskBtn.setDisable(true);
+                                    }
+                                }
+                            } catch (Exception ex) {
+                                Logger.getLogger(DrugDictMgtOverviewController.class.getName()).log(Level.INFO, "开始任务失败！", ex);
+                            }
                         });
                         
                         this.setGraphic(hbox);
@@ -275,6 +471,8 @@ public class DrugDictMgtOverviewController implements Initializable {
         });
         
         /***************字典数据tab***************/
+        this.drugStatus_cbox.setItems(DrugDict.DrugStatus.getDrugStatusList());
+        
         this.drugCategory_cbox.setButtonCell(new StringListCell());
         this.drugCategory_cbox.setCellFactory(view->new StringListCell());
         
@@ -283,6 +481,29 @@ public class DrugDictMgtOverviewController implements Initializable {
 //        this.mfr_cbox.setEditable(true);
 
         this.drugDictTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        this.drugDictTableView.setRowFactory(view->{
+//            TableRow<DrugDict> row=new TableRowControl<DrugDict>();
+            TableRow<DrugDict> row=new TableRow<DrugDict>();
+            row.setOnMouseClicked(e->{
+                if (e.getButton().equals(MouseButton.PRIMARY) && e.getClickCount()==2 && row.getIndex()<row.getTableView().getItems().size()){
+                    try {
+                        String type=MODIFY;
+                        String title="标准字典修订";
+                        if (row.getItem().getStatus()==DrugDict.DrugStatus.ASSIGNED_CHECK){
+                            type=CHECK;
+                            title="标准字典复核";
+                        }
+                        
+                        this.popupDrugDictInfoDialog(title, type, row.getItem());
+                        
+                    } catch (Exception ex) {
+                        Logger.getLogger(DrugDictMgtOverviewController.class.getName()).log(Level.INFO, "DrugDictEditView弹出窗口报错！", ex);
+                    }
+                }
+            });
+            return row;
+        });
+        
         CheckBox selectAll_checkBox=new CheckBox("全选");
         selectAll_checkBox.setOnAction(e->{
             selectAll_checkBox.setAllowIndeterminate(false);
@@ -299,7 +520,7 @@ public class DrugDictMgtOverviewController implements Initializable {
         this.genericCNameColumn.setCellValueFactory(new PropertyValueFactory("genericCName"));
         this.genericENameColumn.setCellValueFactory(new PropertyValueFactory("genericEName"));
         this.mdseCNameColumn.setCellValueFactory(new PropertyValueFactory("mdseCName"));
-        this.mdseCNameColumn.setCellValueFactory(new PropertyValueFactory("mdseEName"));
+        this.mdseENameColumn.setCellValueFactory(new PropertyValueFactory("mdseEName"));
         this.drugCategoryColumn.setCellValueFactory(new PropertyValueFactory("category"));
         this.formulationColumn.setCellValueFactory(new PropertyValueFactory("formulation"));
         this.drugUnitColumn.setCellValueFactory(new PropertyValueFactory("drugUnit"));
@@ -321,6 +542,7 @@ public class DrugDictMgtOverviewController implements Initializable {
         this.stdCodeNoteColumn.setCellValueFactory(new PropertyValueFactory("stdCodeNote"));
         this.atcCodeColumn.setCellValueFactory(new PropertyValueFactory("actCode"));
         this.ddStatusColumn.setCellValueFactory(new PropertyValueFactory("status"));
+        this.ddTaskIdColumn.setCellValueFactory(new PropertyValueFactory("taskId"));
         
     }    
     
@@ -328,6 +550,21 @@ public class DrugDictMgtOverviewController implements Initializable {
         this.drugManageApp = drugManageApp;
     }
     
+     public void setUserList(ObservableList<Map> userList){
+        this.userList=userList;
+        
+        this.assignedToColumn.setCellValueFactory(celldata->{
+            int userId=celldata.getValue().getAssignedToId();
+            String userName=null;
+            for (Map user : this.userList){
+                if ((int)user.get("id")==userId){
+                    userName=(String)user.get("name");
+                }
+            }
+            return new SimpleStringProperty(userName);
+        });
+    }
+     
     public void setDrugCategoryList(ObservableList<DrugCategory> drugCategoryList){
         this.drugCategoryList=drugCategoryList;
         this.drugCategory_cbox.setItems(drugCategoryList);
@@ -346,4 +583,16 @@ public class DrugDictMgtOverviewController implements Initializable {
         this.drugDictData=drugDictData;
         this.drugDictTableView.setItems(this.drugDictData);
     }
+    
 }
+
+//class TableRowControl<T> extends TableRow<T>{
+//    public TableRowControl(){
+//        super();
+//        this.setOnMouseClicked(e->{
+//            if (e.getButton().equals(MouseButton.PRIMARY) && e.getClickCount()==2 && TableRowControl.this.getIndex()<this.getTableView().getItems().size()){
+//               
+//            }
+//        });
+//    }
+//}

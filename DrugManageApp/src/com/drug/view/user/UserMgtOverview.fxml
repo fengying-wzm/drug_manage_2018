@@ -15,11 +15,12 @@
             <HBox alignment="CENTER_LEFT" prefHeight="37.0" prefWidth="600.0">
                <children>
                   <Label text="用户名：" />
-                  <ComboBox fx:id="user_cBox" prefHeight="23.0" prefWidth="90.0" />
+                  <ComboBox fx:id="user_cBox" onAction="#enableClearFilter" prefHeight="23.0" prefWidth="90.0" />
                   <Separator orientation="VERTICAL" prefHeight="8.0" prefWidth="30.0" />
                   <Label text="角色：" />
-                  <ComboBox fx:id="role_cBox" prefHeight="23.0" prefWidth="90.0" />
+                  <ComboBox fx:id="role_cBox" onAction="#enableClearFilter" prefHeight="23.0" prefWidth="90.0" />
                   <Separator orientation="VERTICAL" prefHeight="8.0" prefWidth="30.0" />
+                  <CheckBox fx:id="clearFilterChkBox" disable="true" mnemonicParsing="false" onAction="#clearFilter" text="清空" />
                   <HBox alignment="CENTER" prefHeight="27.0" prefWidth="105.0" spacing="5.0">
                      <children>
                         <Button fx:id="queryBtn" mnemonicParsing="false" onAction="#getUsers" text="查询" />

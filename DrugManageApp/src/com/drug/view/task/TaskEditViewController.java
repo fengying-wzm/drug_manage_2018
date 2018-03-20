@@ -48,15 +48,26 @@ public class TaskEditViewController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         this.assignedOnField.setEditable(false);
+        this.type_cbox.setDisable(true);
         this.countField.setEditable(false);
+        this.assignedTo_cbox.setDisable(false);
         this.status_cbox.setDisable(true);
         this.proecssedCountField.setEditable(false);
         this.startOnField.setEditable(false);
         this.completedOnField.setEditable(false);
-        
+            
         this.type_cbox.setItems(Task.TaskType.getTaskType());
         this.status_cbox.setItems(Task.TaskStatus.getTaskStatus());
     }    
+    
+    /**
+     * 设置窗口类型：add-添加、view-查看、edit-编辑
+     */
+    public void setType(String type){
+        if (type.equals("view")){
+            this.assignedTo_cbox.setDisable(true);
+        }
+    }
     
     public void setUserList(ObservableList<Map> userList){
         this.userList=userList;
@@ -70,13 +81,20 @@ public class TaskEditViewController implements Initializable {
     }
     
     public void setTask(Task task){
+        if (task==null){
+            return;
+        }
+        
         this.task=task;
         
-        this.assignedOnField.setText(this.task.getAssignedOn().toString());
+        if (this.task.getAssignedOn()!=null){
+            this.assignedOnField.setText(this.task.getAssignedOn().toString());
+        }
+        
         this.countField.setText(String.valueOf(this.task.getCount()));
         this.proecssedCountField.setText(String.valueOf(this.task.getProcessedCount()));
-        if (this.task.getStartOn()!=null){
-            this.startOnField.setText(this.task.getStartOn().toString());
+        if (this.task.getStartedOn()!=null){
+            this.startOnField.setText(this.task.getStartedOn().toString());
         }
         
         if (this.task.getCompletedOn()!=null){
