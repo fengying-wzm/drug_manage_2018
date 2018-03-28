@@ -15,17 +15,17 @@ import com.drug.model.Drug;
 import com.drug.model.DrugCategory;
 import com.drug.model.DrugDict;
 import com.drug.model.DrugGeneric;
+import com.drug.model.Manufacturer;
 import com.drug.model.Task;
 import com.drug.model.User;
 import com.drug.util.HttpMethod;
 import com.drug.util.IPaddress;
-import com.drug.util.ServiceUtil;
 import com.drug.view.LoginOverviewController;
 import com.drug.view.MainOverviewController;
 import com.drug.view.drugdict.DrugDictMgtOverviewController;
+import com.drug.view.sysdict.SysDictMgtOverviewController;
 import com.drug.view.task.TaskMgtOverviewController;
 import com.drug.view.user.UserMgtOverviewController;
-import com.sun.org.apache.bcel.internal.generic.LoadClass;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -67,6 +67,12 @@ public class DrugManageApp extends Application {
     
     private ObservableList<DrugDict> stdDictData;
     private Map<String,Object> currStdDictPage;
+    
+    private ObservableList<DrugGeneric> drugGenericData;
+    private Map<String,Object> currDrugGenericPage;
+    
+    private ObservableList<Manufacturer> drugMfrData;
+    private Map<String,Object> currDrugMfrPage;
     
     private Map<String,Object> result;
 
@@ -151,7 +157,7 @@ public class DrugManageApp extends Application {
             this.loadDrugCategory();
         }
         if (this.drugGenericList==null){
-            this.loadDrugGeneric();
+            this.loadDrugGenericList();
         }
         if (this.mfrList==null){
             this.loadMfrList();
@@ -188,7 +194,7 @@ public class DrugManageApp extends Application {
             this.loadDrugCategory();
         }
         if (this.drugGenericList==null ){
-            this.loadDrugGeneric();
+            this.loadDrugGenericList();
         }
         if (this.mfrList==null){
             this.loadMfrList();
@@ -203,6 +209,17 @@ public class DrugManageApp extends Application {
         if (taskIds!=null){
             drugDictMgtOverviewController.setDrugDictData(this.loadStdDictsByTaskIds(taskIds));
         }
+    }
+    
+    public void showSysDictMgtOverview() throws Exception{
+        SysDictMgtOverviewController sysDictMgtOverviewController=(SysDictMgtOverviewController)this.showMainSubOverview("view/sysdict/SysDictMgtOverview.fxml");
+        sysDictMgtOverviewController.setDrugManageApp(this);
+        
+        this.loadDrugGenericData();
+        this.loadDrugMfrData();
+        
+        sysDictMgtOverviewController.setDrugGenericData(this.drugGenericData);
+        sysDictMgtOverviewController.setDrugMfrData(this.drugMfrData);
     }
     
     public void showAboutOverview() throws Exception{
@@ -364,7 +381,7 @@ public class DrugManageApp extends Application {
         
         return this.drugCategoryList;
     }
-    private ObservableList<DrugGeneric> loadDrugGeneric() throws Exception{
+    private ObservableList<DrugGeneric> loadDrugGenericList() throws Exception{
         String result=HttpMethod.getGETString(IPaddress.MATHOD_GET_DRUG_GENERIC_LIST);
         JSONArray jsonArray=JSONArray.fromObject(result);
         List<DrugGeneric> drugGenericList=(List<DrugGeneric>)JSONArray.toCollection(jsonArray, DrugGeneric.class);
@@ -405,6 +422,29 @@ public class DrugManageApp extends Application {
         
         return taskIds;
     }
+    
+    public List<DrugGeneric> loadDrugGenericData(){
+        String jsonstr=HttpMethod.getGETString(IPaddress.MATHOD_GET_DRUG_GENERIC_DATA);
+        JSONObject jsonObj=JSONObject.fromObject(jsonstr);
+        Map page=(Map)JSONObject.toBean(jsonObj, Map.class);
+        JSONArray jsonArr=JSONArray.fromObject(page.get("content"));
+        List<DrugGeneric> list=(List<DrugGeneric>)JSONArray.toCollection(jsonArr,DrugGeneric.class);
+        this.drugGenericData=FXCollections.observableList(list);
+        
+        return this.drugGenericData;
+    }
+    
+    public List<Manufacturer> loadDrugMfrData(){
+        String jsonstr=HttpMethod.getGETString(IPaddress.MATHOD_GET_DRUG_MFR_DATA);
+        JSONObject jsonObj=JSONObject.fromObject(jsonstr);
+        Map page=(Map)JSONObject.toBean(jsonObj, Map.class);
+        JSONArray jsonArr=JSONArray.fromObject(page.get("content"));
+        List<Manufacturer> list=(List<Manufacturer>)JSONArray.toCollection(jsonArr,Manufacturer.class);
+        this.drugMfrData=FXCollections.observableList(list);
+        
+        return this.drugMfrData;
+    }
+    
     public ObservableList<Map> getUserList(){
         return this.userList;
     }

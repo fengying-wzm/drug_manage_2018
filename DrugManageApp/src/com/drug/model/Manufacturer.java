@@ -16,20 +16,33 @@ import javafx.beans.property.StringProperty;
  */
 public class Manufacturer implements IModel{
 
-    private final LongProperty id = new SimpleLongProperty();
-    private final StringProperty code = new SimpleStringProperty();
-    private final StringProperty name = new SimpleStringProperty();
-    private final StringProperty range = new SimpleStringProperty();
-    private final StringProperty socialCreditCode = new SimpleStringProperty();
-    private final StringProperty address = new SimpleStringProperty();
-    private final StringProperty countryCode = new SimpleStringProperty();
-    private final LongProperty regionId = new SimpleLongProperty();
-    private final LongProperty parentId = new SimpleLongProperty();
+    private final LongProperty id;
+    private final StringProperty code;
+    private final StringProperty name;
+    private final StringProperty range;
+    private final StringProperty socialCreditCode;
+    private final StringProperty address;
+    private final StringProperty countryCode;
+    private final LongProperty regionId;
+    private final LongProperty parentId;
+    
+    
+    public Manufacturer(){
+        this.id = new SimpleLongProperty();
+        this.code = new SimpleStringProperty();
+        this.name = new SimpleStringProperty();
+        this.range = new SimpleStringProperty();
+        this.socialCreditCode = new SimpleStringProperty();
+        this.address = new SimpleStringProperty();
+        this.countryCode = new SimpleStringProperty();
+        this.regionId = new SimpleLongProperty();
+        this.parentId = new SimpleLongProperty();
+    }
 
-    public long getId() {
+    public Long getId() {
         return id.get();
     }
-    public void setId(long value) {
+    public void setId(Long value) {
         id.set(value);
     }
     public LongProperty idProperty() {
@@ -97,20 +110,26 @@ public class Manufacturer implements IModel{
         return countryCode;
     }
     
-    public long getRegionId() {
+    public Long getRegionId() {
         return regionId.get();
     }
-    public void setRegionId(long value) {
+    public void setRegionId(Long value) {
+        if (value==null){
+            return;
+        }
         regionId.set(value);
     }
     public LongProperty regionIdProperty() {
         return regionId;
     }
    
-    public long getParentId() {
+    public Long getParentId() {
         return parentId.get();
     }
-    public void setParentId(long value) {
+    public void setParentId(Long value) {
+        if (value==null){
+            return;
+        }
         parentId.set(value);
     }
     public LongProperty parentIdProperty() {

@@ -27,7 +27,9 @@ public class MainOverviewController implements Initializable {
     @FXML
     private Menu taskMgtMenu;
     @FXML
-    private Menu drugDicMenu;
+    private Menu drugStdDicMenu;
+    @FXML
+    private Menu sysDictMenu;
     @FXML
     private MenuItem exitMenuItem;
     @FXML
@@ -52,11 +54,19 @@ public class MainOverviewController implements Initializable {
         }
     }
     @FXML
-    private void showDrugDictMgtOverview(){
+    private void showDrugStdDictMgtOverview(){
         try {
             this.drugManageApp.showDrugDictMgtOverview();
         } catch (Exception ex) {
-            Logger.getLogger(MainOverviewController.class.getName()).log(Level.INFO, "字典维护视图显示异常！", ex);
+            Logger.getLogger(MainOverviewController.class.getName()).log(Level.INFO, "标准字典维护视图显示异常！", ex);
+        }
+    }
+    @FXML
+    private void showSysDictMgtOverview(){
+        try {
+            this.drugManageApp.showSysDictMgtOverview();
+        } catch (Exception ex) {
+            Logger.getLogger(MainOverviewController.class.getName()).log(Level.INFO, "系统字典维护视图显示异常！", ex);
         }
     }
     @FXML
@@ -86,11 +96,18 @@ public class MainOverviewController implements Initializable {
         });
         this.taskMgtMenu.setGraphic(taskLbl);
         
-        Label drugDicLbl=new Label("药品字典维护");
-        drugDicLbl.setOnMouseClicked(e->{
-            this.showDrugDictMgtOverview();
+        Label drugStdDicLbl=new Label("药品标准字典维护");
+        drugStdDicLbl.setOnMouseClicked(e->{
+            this.showDrugStdDictMgtOverview();
         });
-        this.drugDicMenu.setGraphic(drugDicLbl);
+        this.drugStdDicMenu.setGraphic(drugStdDicLbl);
+        
+        Label sysDictLbl=new Label("系统字典维护");
+        sysDictLbl.setOnMouseClicked(e->{
+            this.showSysDictMgtOverview();
+        });
+        this.sysDictMenu.setGraphic(sysDictLbl);
+        
     }
     
     public void setDrugManageApp(DrugManageApp drugManageApp) {

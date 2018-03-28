@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.drug.view.sysdict.SysDictMgtOverviewController">
+   <children>
+      <TabPane layoutX="-17.0" layoutY="87.0" prefHeight="400.0" prefWidth="600.0" rotateGraphic="true" side="LEFT" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <tabs>
+          <Tab text="通用名字典">
+               <content>
+                  <VBox prefHeight="200.0" prefWidth="100.0">
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
+                     <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="37.0" prefWidth="561.0" style="-fx-border-width: 1; -fx-border-color: lightgray;">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                           <children>
+                              <Label text="通用名：" />
+                              <TextField fx:id="genericName_field" onAction="#queryDrugGenericData" />
+                              <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+                                 <children>
+                                    <Button fx:id="addGenericBtn" mnemonicParsing="false" onAction="#addGeneric" text="添加" />
+                                 </children>
+                                 <HBox.margin>
+                                    <Insets left="5.0" right="5.0" />
+                                 </HBox.margin>
+                              </HBox>
+                           </children>
+                        </HBox>
+                        <TableView fx:id="genericTableView" prefHeight="200.0" VBox.vgrow="ALWAYS">
+                          <columns>
+                            <TableColumn fx:id="genericCName_column" prefWidth="1000.0" text="通用名（中文）" />
+                            <TableColumn fx:id="genericEName_column" minWidth="6.0" prefWidth="1000.0" text="通用名（英文）" />
+                              <TableColumn fx:id="genericOpt_column" minWidth="0.0" prefWidth="100.0" resizable="false" text="操作" />
+                          </columns>
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
+                        </TableView>
+                     </children>
+                  </VBox>
+               </content></Tab>
+          <Tab text="生产厂家字典">
+               <content>
+                  <VBox prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="37.0" prefWidth="571.0">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                           <children>
+                              <Label text="名称：" />
+                              <TextField fx:id="mfrName_field" onAction="#enableClearMfrFilter" />
+                              <Separator orientation="VERTICAL" prefHeight="200.0" prefWidth="30.0" />
+                              <Label text="国家：" />
+                              <ComboBox fx:id="country_cbox" onAction="#enableClearMfrFilter" prefWidth="150.0" />
+                              <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <CheckBox fx:id="clearMfrFilter_chkbox" disable="true" mnemonicParsing="false" onAction="#clearMfrFilter" text="清空" />
+                                    <Button fx:id="addMfrBtn" mnemonicParsing="false" onAction="#addMfr" text="添加" />
+                                 </children>
+                                 <opaqueInsets>
+                                    <Insets left="5.0" right="5.0" />
+                                 </opaqueInsets>
+                                 <padding>
+                                    <Insets left="5.0" right="5.0" />
+                                 </padding>
+                              </HBox>
+                           </children>
+                        </HBox>
+                        <TableView fx:id="mfrTableView" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                          <columns>
+                            <TableColumn fx:id="mfrCode_column" prefWidth="100.0" resizable="false" text="代码" />
+                            <TableColumn fx:id="mfrName_column" prefWidth="1000.0" text="名称" />
+                              <TableColumn fx:id="mfrRange_column" minWidth="0.0" prefWidth="56.0" text="生产范围" />
+                              <TableColumn fx:id="mfrSocialCreditCode_column" minWidth="1.0" prefWidth="100.0" resizable="false" text="社会信用代码" />
+                              <TableColumn fx:id="mfrAddress_column" prefWidth="1000.0" text="地址" />
+                              <TableColumn fx:id="mfrCountryCode_column" prefWidth="100.0" resizable="false" text="国家" />
+                              <TableColumn fx:id="mfrRegion_column" prefWidth="100.0" resizable="false" text="地区" />
+                              <TableColumn fx:id="mfrOpt_column" prefWidth="100.0" resizable="false" text="操作" />
+                          </columns>
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
+                        </TableView>
+                     </children>
+                  </VBox>
+               </content></Tab>
+        </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>

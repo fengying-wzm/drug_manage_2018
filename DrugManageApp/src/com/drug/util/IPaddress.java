@@ -53,6 +53,16 @@ public class IPaddress {
     public static final String MATHOD_GET_DRUG_DOSAGE_UNIT_LIST="getDrugDosageUnitList";
     public static final String MATHOD_GET_DRUG_PKG_UNIT_LIST="getDrugPkgUnitList";
     
+    /***************系统字典维护*************************/
+    public static final String MATHOD_GET_DRUG_GENERIC_DATA="getDrugGenericData";
+    public static final String MATHOD_GET_DRUG_MFR_DATA="getDrugManufacturerData";
+    public static final String MATHOD_ADD_DRUG_GENERIC="addDrugGeneric";
+    public static final String MATHOD_ADD_DRUG_MFR="addDrugManufacturer";
+    public static final String MATHOD_UPDATE_DRUG_GENERIC="updateDrugGeneric";
+    public static final String MATHOD_UPDATE_DRUG_MFR="updateDrugManufacturer";
+    
+    public static final String MATHOD_DELETE_DRUG_GENERIC="deleteDrugGeneric";
+    public static final String MATHOD_DELETE_DRUG_MFR="deleteDrugManufacturer";
     
  /*******************************************/   
     public static final String IP_send_SITE = "http://localhost:8080/";    //发送信息的IP地址

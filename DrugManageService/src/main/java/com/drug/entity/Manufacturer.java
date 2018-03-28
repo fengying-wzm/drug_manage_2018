@@ -27,7 +27,7 @@ public class Manufacturer implements Serializable {
     private String code;
     @Column(name="name")
     private String name;
-    @Column(name="range")
+    @Column(name="mfr_range")
     private String range;
     @Column(name="social_credit_code")
     private String socialCreditCode;

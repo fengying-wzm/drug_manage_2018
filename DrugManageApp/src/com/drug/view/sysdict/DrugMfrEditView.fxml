@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="198.0" prefWidth="765.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.drug.view.sysdict.DrugMfrEditViewController">
+   <children>
+      <GridPane layoutX="100.0" layoutY="102.0" prefHeight="218.0" prefWidth="518.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <columnConstraints>
+          <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="145.0" minWidth="10.0" prefWidth="56.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="376.0" minWidth="10.0" prefWidth="300.0" />
+            <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="247.0" minWidth="10.0" prefWidth="102.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="285.0" minWidth="10.0" prefWidth="300.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label text="厂家代码：" />
+            <TextField fx:id="mfrCode_field" editable="false" GridPane.columnIndex="1" />
+            <TextField fx:id="mfrName_field" editable="false" GridPane.columnIndex="3" />
+            <Label text="厂家名称：" GridPane.columnIndex="2" />
+            <Label text="生产范围：" GridPane.rowIndex="1" />
+            <Label text="社会信用代码：" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <Label text="厂家地址：" GridPane.rowIndex="2" />
+            <Label text="所属国家：" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <TextField fx:id="mfrSocialCreditCode_field" editable="false" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+            <TextField fx:id="mfrAddress_field" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Label text="所属区域：" GridPane.rowIndex="3" />
+            <Label text="上级单位：" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+            <ComboBox fx:id="mfrCountry_cbox" disable="true" prefWidth="305.0" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+            <ComboBox fx:id="mfrRegion_cbox" disable="true" prefHeight="23.0" prefWidth="305.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <TextArea fx:id="mfrRange_tarea" editable="false" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <ComboBox fx:id="mfrParent_cbox" disable="true" prefHeight="23.0" prefWidth="305.0" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+         </children>
+      </GridPane>
+   </children>
+   <padding>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
+</AnchorPane>

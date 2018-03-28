@@ -14,11 +14,13 @@ import com.drug.model.DrugPkgUnit;
 import com.drug.model.DrugUnit;
 import com.drug.util.StringListCell;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -33,9 +35,9 @@ public class DrugDictEditViewController implements Initializable {
     @FXML
     private TextField appvNumber_field;
     @FXML
-    private ComboBox category_cbox;
+    private ComboBox<DrugCategory> category_cbox;
     @FXML
-    private ComboBox genericCName_cbox;
+    private ComboBox<DrugGeneric> genericCName_cbox;
     @FXML
     private TextField genericEName_field;
     @FXML
@@ -43,13 +45,13 @@ public class DrugDictEditViewController implements Initializable {
     @FXML
     private TextField mdseEName_field;
     @FXML
-    private ComboBox formulation_cbox;
+    private ComboBox<DrugFormulation> formulation_cbox;
     @FXML
     private ComboBox atcCode_cbox;
     @FXML
-    private ComboBox mfr_cbox;
+    private ComboBox<Map> mfr_cbox;
     @FXML
-    private ComboBox drugUnit_cbox;
+    private ComboBox<DrugUnit> drugUnit_cbox;
     @FXML
     private TextField appvDate_field;
     @FXML
@@ -67,21 +69,21 @@ public class DrugDictEditViewController implements Initializable {
     @FXML
     private TextField mainDosage_field;
     @FXML
-    private ComboBox mainDosageUnit_cbox;
+    private ComboBox<DrugDosageUnit> mainDosageUnit_cbox;
     @FXML
     private TextField sndDosage_field;
     @FXML
-    private ComboBox sndDosageUnit_cbox;
+    private ComboBox<DrugDosageUnit> sndDosageUnit_cbox;
     @FXML
-    private ComboBox mainPkgUnit_cbox;
+    private ComboBox<DrugPkgUnit> mainPkgUnit_cbox;
     @FXML
     private TextField mainPkgSpec_field;
     @FXML
-    private ComboBox sndPkgUnit_cbox;
+    private ComboBox<DrugPkgUnit> sndPkgUnit_cbox;
     @FXML
     private TextField sndPkgSpec_field;
     @FXML
-    private ComboBox trdPkgUnit_cbox;
+    private ComboBox<DrugPkgUnit> trdPkgUnit_cbox;
   
     private ObservableList<DrugCategory> drugCategoryList;
     private ObservableList<DrugGeneric> drugGenericList;
@@ -185,7 +187,7 @@ public class DrugDictEditViewController implements Initializable {
         this.mdseEName_field.setText(this.currDrugDict.getMdseEName());
         this.selectFormulation();
 //        this.atcCode_cbox
-//        this.mfr_cbox
+        this.selectDrugMfr();
         this.selectDrugUnit();
         this.appvDate_field.setText(this.currDrugDict.getAppvDate()!=null?this.currDrugDict.getAppvDate().toString():null);
         this.orgAppvNumber_field.setText(this.currDrugDict.getOrgAppvNumber());
@@ -200,6 +202,124 @@ public class DrugDictEditViewController implements Initializable {
         this.selectDrugPkgUnit();
         this.mainPkgSpec_field.setText(this.currDrugDict.getMainPkgSpec()!=null?this.currDrugDict.getMainPkgSpec().toString():null);
         this.sndPkgSpec_field.setText(this.currDrugDict.getSndPkgSpec()!=null?this.currDrugDict.getSndPkgSpec().toString():null);
+    }
+    
+    public DrugDict getResult(){
+        DrugDict drug=new DrugDict();
+        drug.setId(this.currDrugDict.getId());
+        
+        drug.setAppvNumber(this.appvNumber_field.getText());
+        Alert alert=new Alert(Alert.AlertType.WARNING);
+        alert.setHeaderText(null);
+        if (this.category_cbox.getSelectionModel().getSelectedItem()!=null){
+            drug.setCategory(this.category_cbox.getSelectionModel().getSelectedItem().getName());
+        }
+        else{
+//            alert.setContentText("药品类型不能为空，请选择！");
+//            alert.show();
+//            return null;
+        }
+        
+        if (this.genericCName_cbox.getSelectionModel().getSelectedItem()!=null){
+            drug.setGenericCName(this.genericCName_cbox.getSelectionModel().getSelectedItem().getGenericCName());
+            drug.setGenericEName(this.genericCName_cbox.getSelectionModel().getSelectedItem().getGenericEName());
+        }
+        else{
+//            alert.setContentText("药品名不能为空，请选择！");
+//            alert.show();
+//            return null;
+        }
+        
+        drug.setMdseCName(this.mdseCName_field.getText());
+        drug.setMdseEName(this.mdseEName_field.getText());
+        
+        if (this.formulation_cbox.getSelectionModel().getSelectedItem()!=null){
+            drug.setFormulation(this.formulation_cbox.getSelectionModel().getSelectedItem().getName());
+        }
+        else{
+//            alert.setContentText("剂型不能为空，请选择！");
+//            alert.show();
+//            return null;
+        }
+        
+        drug.setAtcId(this.currDrugDict.getAtcId());
+        if (this.atcCode_cbox.getSelectionModel().getSelectedItem()!=null){
+//            drug.setAtcId(this.currDrugDict.getAtcId());
+        }
+        else {
+//            alert.setContentText("ATC编码不能为空，请选择！");
+//            alert.show();
+//            return null;
+        }
+        
+        if (this.mfr_cbox.getSelectionModel().getSelectedItem()!=null){
+            drug.setMfrId(Long.valueOf(this.mfr_cbox.getSelectionModel().getSelectedItem().get("id").toString()));
+        }
+        else {
+//            alert.setContentText("生产厂家不能为空，请选择！");
+//            alert.show();
+//            return null;
+        }
+        
+        if (this.drugUnit_cbox.getSelectionModel().getSelectedItem()!=null){
+            drug.setDrugUnit(this.drugUnit_cbox.getSelectionModel().getSelectedItem().getName());
+        }
+        
+        String appvDateStr=this.appvDate_field.getText();
+        if (appvDateStr!=null && !appvDateStr.isEmpty() && !appvDateStr.trim().isEmpty()){
+            drug.setAppvDate(LocalDate.parse(appvDateStr.subSequence(0,appvDateStr.length())));
+        }
+        
+        drug.setOrgAppvNumber(this.orgAppvNumber_field.getText());
+        
+        drug.setStdCode(this.stdCode_field.getText());
+        drug.setStdCodeNote(this.stdCodeNote_tarea.getText());
+        
+        drug.setSpec(this.spec_field.getText());
+        drug.setSpecNote(this.specNote_tarea.getText());
+        
+        String str=this.mainDosage_field.getText();
+        if (str!=null && !str.isEmpty() && !str.trim().isEmpty()){
+            drug.setMainDosage(Double.valueOf(str));
+        }
+        if (this.mainDosageUnit_cbox.getSelectionModel().getSelectedItem()!=null){
+            drug.setMainDosageUnit(this.mainDosageUnit_cbox.getSelectionModel().getSelectedItem().getName());
+        }
+        
+        str=this.sndDosage_field.getText();
+        if (str!=null && !str.isEmpty() && !str.trim().isEmpty()){
+            drug.setSndDosage(Double.valueOf(str));
+        }
+        if (this.sndDosageUnit_cbox.getSelectionModel().getSelectedItem()!=null){
+            drug.setSndDosageUnit(this.sndDosageUnit_cbox.getSelectionModel().getSelectedItem().getName());
+        }
+        
+        str=this.mainPkgSpec_field.getText();
+        if (str!=null && !str.isEmpty() && !str.trim().isEmpty()){
+            drug.setMainPkgSpec(Integer.valueOf(str));
+        }
+        str=this.sndPkgSpec_field.getText();
+        if (str!=null && !str.isEmpty() && !str.trim().isEmpty()){
+            drug.setSndPkgSpec(Integer.valueOf(str));
+        }
+        
+        if (this.mainPkgUnit_cbox.getSelectionModel().getSelectedItem()!=null){
+            drug.setMainPkgUnit(this.mainPkgUnit_cbox.getSelectionModel().getSelectedItem().getName());
+        }
+        if (this.sndPkgUnit_cbox.getSelectionModel().getSelectedItem()!=null){
+            drug.setSndPkgUnit(this.sndPkgUnit_cbox.getSelectionModel().getSelectedItem().getName());
+        }
+        if (this.trdPkgUnit_cbox.getSelectionModel().getSelectedItem()!=null){
+            drug.setTrdPkgUnit(this.trdPkgUnit_cbox.getSelectionModel().getSelectedItem().getName());
+        }
+        
+        drug.setStatus(this.currDrugDict.getStatus());
+        drug.setCreatedById(this.currDrugDict.getCreatedById());
+        drug.setCreatedOn(this.currDrugDict.getCreatedOn());
+        drug.setSourceId(this.currDrugDict.getSourceId());
+        drug.setTaskId(this.currDrugDict.getTaskId());
+        
+        return drug;
     }
     
     private void selectCategory(){
@@ -236,7 +356,7 @@ public class DrugDictEditViewController implements Initializable {
     private void selectDrugMfr(){
         if (this.currDrugDict!=null && this.drugMfrList!=null){
             this.drugMfrList.forEach(item->{
-                if (item.get("id")==this.currDrugDict.getMfrId()){
+                if (Long.valueOf(item.get("id").toString())==this.currDrugDict.getMfrId()){
                     this.mfr_cbox.getSelectionModel().select(item);
                 }
             });

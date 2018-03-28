@@ -29,8 +29,10 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -372,11 +374,7 @@ public class DrugDictMgtOverviewController implements Initializable {
         drugDictEditDialog.getDialogPane().setContent(drugDictEditView);
         drugDictEditDialog.setResultConverter(btnType->{
             if (btnType==okBtn){
-                DrugDict adrug=new DrugDict();
-//                atask.setType(durgDictEditViewController.type_cbox.getValue());
-//                atask.setCount(Integer.parseInt(taskEditViewController.countField.getText()));
-//                atask.setAssignedToId((int)taskEditViewController.assignedTo_cbox.getValue().get("id"));
-                return adrug;
+                return drugDictEditViewController.getResult();
             }
 
             return null;
@@ -384,9 +382,21 @@ public class DrugDictMgtOverviewController implements Initializable {
         
         Optional<DrugDict> result=drugDictEditDialog.showAndWait();
         if (result!=null && result.get()!=null){
-//            drugDict.set(result.get().getType());
-//            drugDict.setAssignedToId(result.get().getAssignedToId());
-            this.drugDictTableView.refresh();
+            String mathodName=type==MODIFY?IPaddress.MATHOD_MODIFY_STD_DICT:IPaddress.MATHOD_CHECK_STD_DICT;
+            JSONObject jsonObj=JSONObject.fromObject(result.get());
+            String returnStr=HttpMethod.sendPOSTString(mathodName,jsonObj.toString(),"UTF-8");
+            if (returnStr!=null){
+//                int index=this.drugDictTableView.getItems().indexOf(drugDict);
+//                this.drugDictTableView.getItems().remove(index);
+//                this.drugDictTableView.getItems().add(index, result.get());
+                this.queryDrugDicts();
+            }      
+            else{
+                Alert alert=new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText(null);
+                alert.setContentText(type==MODIFY?"修订异常！":"复核异常！");
+                alert.show();
+            }
         } 
     }
     /**
@@ -396,7 +406,8 @@ public class DrugDictMgtOverviewController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         this.dateTimeFormatter=DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         
-        this.taskType_cbox.setItems(Task.TaskType.getTaskType());
+        FilteredList taskTypeList=Task.TaskType.getTaskType().filtered(type->type.equals(Task.TaskType.MODIFY_STD_DICT) || type.equals(Task.TaskType.CHECK_STD_DICT));
+        this.taskType_cbox.setItems(FXCollections.observableList(taskTypeList));
         this.taskStatus_cbox.setItems(Task.TaskStatus.getTaskStatus());
         
         this.assignedOnColumn.setCellValueFactory(new PropertyValueFactory("assignedOn"));
@@ -471,7 +482,8 @@ public class DrugDictMgtOverviewController implements Initializable {
         });
         
         /***************字典数据tab***************/
-        this.drugStatus_cbox.setItems(DrugDict.DrugStatus.getDrugStatusList());
+        FilteredList<String> drugStatusList=DrugDict.DrugStatus.getDrugStatusList().filtered(status->!status.equals(DrugDict.DrugStatus.NOASSIGNED));
+        this.drugStatus_cbox.setItems(FXCollections.observableList(drugStatusList));
         
         this.drugCategory_cbox.setButtonCell(new StringListCell());
         this.drugCategory_cbox.setCellFactory(view->new StringListCell());
@@ -482,8 +494,8 @@ public class DrugDictMgtOverviewController implements Initializable {
 
         this.drugDictTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         this.drugDictTableView.setRowFactory(view->{
-//            TableRow<DrugDict> row=new TableRowControl<DrugDict>();
             TableRow<DrugDict> row=new TableRow<DrugDict>();
+            
             row.setOnMouseClicked(e->{
                 if (e.getButton().equals(MouseButton.PRIMARY) && e.getClickCount()==2 && row.getIndex()<row.getTableView().getItems().size()){
                     try {
@@ -535,13 +547,40 @@ public class DrugDictMgtOverviewController implements Initializable {
         this.sndPkgUnitColumn.setCellValueFactory(new PropertyValueFactory("sndPkgUnit"));
         this.sndPkgSpecColumn.setCellValueFactory(new PropertyValueFactory("sndPkgSpec"));
         this.trdPkgUnitColumn.setCellValueFactory(new PropertyValueFactory("trdPkgUnit"));
-        this.mfrColumn.setCellValueFactory(new PropertyValueFactory("mfrPkgUnit"));
+//        this.mfrColumn.setCellValueFactory(new PropertyValueFactory("mfrId"));
+        
         this.appvDateColumn.setCellValueFactory(new PropertyValueFactory("appvDate"));
         this.orgAppvNumberColumn.setCellValueFactory(new PropertyValueFactory("orgAppvNumber"));
         this.stdCodeColumn.setCellValueFactory(new PropertyValueFactory("stdCode"));
         this.stdCodeNoteColumn.setCellValueFactory(new PropertyValueFactory("stdCodeNote"));
         this.atcCodeColumn.setCellValueFactory(new PropertyValueFactory("actCode"));
         this.ddStatusColumn.setCellValueFactory(new PropertyValueFactory("status"));
+        this.ddStatusColumn.setCellFactory(col->{
+            TableCell cell=new TableCell<DrugDict,String>(){
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    this.setText(null);
+                    this.setStyle(null);
+                    
+                    if (!empty){
+                        this.setText(item);
+                        //设置样式,着重标识
+                        if (item.equals(DrugDict.DrugStatus.MODIFIED)){
+                            this.setStyle("-fx-background-color:red");
+                        }
+                        
+                        if (item.equals(DrugDict.DrugStatus.CHECKED)){
+                            this.setStyle("-fx-background-color:blue");
+                        }
+                        
+                    }
+                }
+                
+            };
+            
+            return cell;
+        });
         this.ddTaskIdColumn.setCellValueFactory(new PropertyValueFactory("taskId"));
         
     }    
@@ -572,6 +611,18 @@ public class DrugDictMgtOverviewController implements Initializable {
     public void setMfrList(ObservableList<Map> mfrList){
         this.mfrList=mfrList;
         this.mfr_cbox.setItems(this.mfrList);
+        this.mfrColumn.setCellValueFactory(cellData->{
+            Long mfrId=cellData.getValue().getMfrId();
+            String mfrName=null;
+            for (Map map : this.mfrList){
+                if (Long.valueOf(map.get("id").toString())==mfrId){
+                    mfrName=(String)map.get("name");
+                    break;
+                }
+            }
+            
+            return new SimpleStringProperty(mfrName);
+        });
     }
     
     public void setTaskData(ObservableList<Task> taskData){
@@ -585,14 +636,3 @@ public class DrugDictMgtOverviewController implements Initializable {
     }
     
 }
-
-//class TableRowControl<T> extends TableRow<T>{
-//    public TableRowControl(){
-//        super();
-//        this.setOnMouseClicked(e->{
-//            if (e.getButton().equals(MouseButton.PRIMARY) && e.getClickCount()==2 && TableRowControl.this.getIndex()<this.getTableView().getItems().size()){
-//               
-//            }
-//        });
-//    }
-//}
